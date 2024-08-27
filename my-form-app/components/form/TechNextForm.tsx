@@ -1,12 +1,16 @@
 "use client"
  
 import { z } from "zod"
-import { useForm, SubmitHandler, } from "react-hook-form"
+import { useForm,  } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-
+import { createStudentAsync } from "../../redux/slice/StudentService";
 import { Form, FormField, FormItem, FormLabel, FormMessage, FormControl, FormDescription} from "../ui/form"//? shadcn ui
 import { Input } from "../ui/input"
 import AiButton from "../MagicButton"
+import { useAppDispatch, useAppSelector } from "@/lib/hooks";
+import { message, Spin } from "antd";
+import { useRouter } from "next/navigation";
+
 const courses = [
   "Frontend Development",
   "Backend Development",
@@ -52,7 +56,7 @@ const formSchema = z.object({
   dob: z.string().refine((val) => {
     const date = new Date(val);
     const age = new Date().getFullYear() - date.getFullYear();
-    return age >= 16 && age <= 100;
+    return age >= 8 && age <= 100;
   }, { message: "Uyğun bir yaş aralığı seçın (16-100)" }),
   gender: z.enum(["male", "female", "other"], {
     required_error: "Cinsiyyət seçilməlidir",
@@ -60,7 +64,8 @@ const formSchema = z.object({
   email: z.string().email({ message: "Uyğun bir e-mail adresi daxil edin." }),
   phone: z
   .string()
-  .regex(/^\+994(51|55|77)\d{7}$/, {
+  .regex(/^(?:\+994|994)?(?:\s?)(51|50|55|70|77|60)(?:\s?\d{3})(?:\s?\d{2})(?:\s?\d{2})$/
+, {
     message: "Uygun bir telefon nömrəsi daxil edin (məs: +994 51 811 81 21).",
   }),
 
@@ -73,20 +78,58 @@ const formSchema = z.object({
   programmingKnowledge: z
     .string()
     .min(3, { message: "Programlaşdırma dili haqqında məlumat ən az 3 simvol olmalıdır." }),
-  github: z.string().url({ message: "Uyğun bir URL daxil edin." }).optional(),
+ // github: z.string().url({ message: "Uyğun bir URL daxil edin." }).optional(),
+ github: z.union([z.string().url({ message: "Uyğun bir URL daxil edin." }).optional(), z.undefined(), z.null(), ]),
+
   course: z.string().min(1, { message: "İxtisas seçilməlidir." }),
 })
 const TechNextForm = () => {
-  const form = useForm<z.infer<typeof formSchema>>({
+   //? navigation
+   const router = useRouter()
+  const {reset, ...form} = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
+    defaultValues: {
+      firstName: '',
+      lastName: '',
+      dob: '',
+      gender: '',
+      email: '',
+      phone: '',
+      address: '',
+      school: '',
+      university: '',
+      motivation: '',
+      programmingKnowledge: '',
+      //github: '',
+      course: '',
+    },
     
   })
+  //? redux toolkit
 
-  function onSubmitForm(values: z.infer<typeof formSchema>) {
-    // Do something with the form values.
-    // ✅ This will be type-safe and validated.
+  const dispatch = useAppDispatch();
+
+  const{error:backError, isLoading} = useAppSelector((state) => state.students);
+ 
+  async function onSubmitForm(values: z.infer<typeof formSchema>) {
+    const formattedData = {
+      ...values,
+      dob: new Date(values.dob), // 'dob' özelliğini 'Date' türüne dönüştür
+    };
     console.log(values)
+    try {
+      await dispatch(createStudentAsync(formattedData)).unwrap();
+      message.success('Qeydiyyat uğurla tamamlandı');
+      router.push('/success');
+    } catch (error) {
+        message.error(error, 6);
+      
+    } finally {
+      reset(); // Formu her durumda sıfırla
+    }
   }
+  
+
   return (
 <>
 <div className="max-w-lg mx-auto p-6 bg-white rounded-lg shadow-md">
@@ -96,7 +139,7 @@ const TechNextForm = () => {
             render={({ field }) => (
               <FormItem>
                 <FormLabel className="text-sm font-medium mb-2">Adınız*</FormLabel>
-                <FormControl>
+                <FormControl >
                   <Input className="border rounded p-3 w-full" placeholder="Ad" {...field} />
                 </FormControl>
                 <FormMessage />
@@ -121,7 +164,7 @@ const TechNextForm = () => {
               <FormItem>
                 <FormLabel className="text-sm font-medium mb-2">Doğum Tarixi*</FormLabel>
                 <FormControl>
-                  <Input className="border rounded p-3 w-full" type="date" placeholder="Doğum Tarixi" {...field} />
+                  <Input  className="border rounded p-3 w-full" type="date" placeholder="Doğum Tarixi" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -264,7 +307,10 @@ const TechNextForm = () => {
 
           {/* <button type="submit" className="bg-blue-500 text-white p-3 rounded mt-4 w-full">Göndər</button> */}
        <div className="flex justify-center items-center">
-       <AiButton/>
+        {
+          isLoading ? <Spin size="large"/> :  <AiButton/>
+        }
+      
        </div>
         </form>
       </Form>
@@ -276,28 +322,3 @@ const TechNextForm = () => {
 
 export default TechNextForm
 
-
-//? Kişisel Bilgiler:
-
-// Ad ve Soyad: Öğrencinin tam adı ve soyadı. +++
-// Doğum Tarihi: Öğrencinin yaşı ve burs programına uygun olup olmadığını belirlemek için. +++
-// Cinsiyet: Burs programı için gerekli olabilir. +++
-//? İletişim Bilgileri:
-
-// E-posta Adresi: Öğrenciye ulaşmak için kullanılacak temel iletişim bilgisi. +++
-// Telefon Numarası: Acil durumlarda veya ek bilgi gerektiğinde kullanılabilir. +++
-// Adres: Öğrencinin ikamet ettiği yerin bilgileri +++
-
-//? Eğitim Bilgileri:
-
-// Okulun Adı: Hangi okulda okudukları. +++
-// university +++ select box
-//? Başvuru Amacı:
-
-// Neden Bu Programa Başvurmak İstiyor?: Öğrencinin motivasyonlarını ve hedeflerini anlamak için. +++
-// Gelecek Hedefleri: Öğrencinin yazılım alanındaki gelecekteki hedeflerini belirtmesi. +++
-//? Teknik Bilgiler:
-
-// Programlama Bilgisi: Öğrencinin bildiği diller veya teknolojiler. +++
-// GitHub veya Portföy Linki: Öğrencinin teknik yeteneklerini gösterebileceği bir link. +++
-//? Ekstra Bilgiler:
