@@ -7,7 +7,18 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { Form, FormField, FormItem, FormLabel, FormMessage, FormControl, FormDescription} from "../ui/form"//? shadcn ui
 import { Input } from "../ui/input"
 import AiButton from "../MagicButton"
-
+const courses = [
+  "Frontend Development",
+  "Backend Development",
+  "Full Stack (MERN) Development",
+  "Flutter Development",
+  "Mobile App Development",
+  "JavaScript Mastery",
+  "DevOps Engineering",
+  "Data Science",
+  "AI & Machine Learning",
+  "Cybersecurity",
+];
 const universities = [
   "Azərbaycan Dövlət İqtisad Universiteti",
   "Bakı Dövlət Universiteti",
@@ -63,6 +74,7 @@ const formSchema = z.object({
     .string()
     .min(3, { message: "Programlama dili haqqında məlumat ən az 3 simvol olmalıdır." }),
   github: z.string().url({ message: "Uyğun bir URL daxil edin." }).optional(),
+  course: z.string().min(1, { message: "İxtisas seçilməlidir." }),
 })
 const TechNextForm = () => {
   const form = useForm<z.infer<typeof formSchema>>({
@@ -190,6 +202,22 @@ const TechNextForm = () => {
                     <option value="">Seçin</option>
                     {universities.map((uni) => (
                       <option key={uni} value={uni}>{uni}</option>
+                    ))}
+                  </select>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField control={form.control} name="course"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="text-sm font-medium mb-2">İxtisas Seçimi*</FormLabel>
+                <FormControl>
+                  <select {...field} className="border rounded p-3 w-full">
+                    <option value="">Seçin</option>
+                    {courses.map((course) => (
+                      <option key={course} value={course}>{course}</option>
                     ))}
                   </select>
                 </FormControl>
