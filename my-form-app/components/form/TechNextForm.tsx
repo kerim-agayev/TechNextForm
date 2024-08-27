@@ -86,13 +86,12 @@ const formSchema = z.object({
 const TechNextForm = () => {
    //? navigation
    const router = useRouter()
-  const {reset, ...form} = useForm<z.infer<typeof formSchema>>({
+  const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       firstName: '',
       lastName: '',
       dob: '',
-      gender: '',
       email: '',
       phone: '',
       address: '',
@@ -100,7 +99,7 @@ const TechNextForm = () => {
       university: '',
       motivation: '',
       programmingKnowledge: '',
-      //github: '',
+      github: '',
       course: '',
     },
     
@@ -114,7 +113,7 @@ const TechNextForm = () => {
   async function onSubmitForm(values: z.infer<typeof formSchema>) {
     const formattedData = {
       ...values,
-      dob: new Date(values.dob), // 'dob' özelliğini 'Date' türüne dönüştür
+      dob: new Date(values.dob), //
     };
     console.log(values)
     try {
@@ -122,10 +121,10 @@ const TechNextForm = () => {
       message.success('Qeydiyyat uğurla tamamlandı');
       router.push('/success');
     } catch (error) {
-        message.error(error, 6);
+        message.error(error as string, 6);
       
     } finally {
-      reset(); // Formu her durumda sıfırla
+      form.reset(); // Formu her durumda sıfırla
     }
   }
   
@@ -293,7 +292,7 @@ const TechNextForm = () => {
             )}
           />
 
-          <FormField control={form.control} name="github"
+          {/* <FormField control={form.control} name="github"
             render={({ field }) => (
               <FormItem>
                 <FormLabel className="text-sm font-medium mb-2">GitHub / Portföy Linki</FormLabel>
@@ -303,7 +302,27 @@ const TechNextForm = () => {
                 <FormMessage />
               </FormItem>
             )}
-          />
+          /> */}
+<FormField control={form.control} name="github"
+  render={({ field }) => (
+    <FormItem>
+      <FormLabel className="text-sm font-medium mb-2">GitHub / Portföy Linki</FormLabel>
+      <FormControl>
+        <Input
+          className="border rounded p-3 w-full"
+          placeholder="GitHub və ya Portföy URL"
+          value={field.value ?? ""} // null 
+          onChange={field.onChange}
+          onBlur={field.onBlur}
+          name={field.name}
+          ref={field.ref}
+        />
+      </FormControl>
+      <FormMessage />
+    </FormItem>
+  )}
+/>
+
 
           {/* <button type="submit" className="bg-blue-500 text-white p-3 rounded mt-4 w-full">Göndər</button> */}
        <div className="flex justify-center items-center">

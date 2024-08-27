@@ -14,7 +14,7 @@ interface StudentData {
     university: string;
     motivation: string;
     programmingKnowledge: string;
-    github?: string;  // Optional field
+    github?: string | null; 
     course: string;
   }
   
