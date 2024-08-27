@@ -69,10 +69,10 @@ const formSchema = z.object({
   university: z.string().min(1, { message: "Universitet seçilməlidir." }),
   motivation: z
     .string()
-    .min(10, { message: "Motivasiya m'ktubu 'n az 10 simvol olmalıdır." }),
+    .min(10, { message: "Motivasiya məktubu ən az 10 simvol olmalıdır." }),
   programmingKnowledge: z
     .string()
-    .min(3, { message: "Programlama dili haqqında məlumat ən az 3 simvol olmalıdır." }),
+    .min(3, { message: "Programlaşdırma dili haqqında məlumat ən az 3 simvol olmalıdır." }),
   github: z.string().url({ message: "Uyğun bir URL daxil edin." }).optional(),
   course: z.string().min(1, { message: "İxtisas seçilməlidir." }),
 })
