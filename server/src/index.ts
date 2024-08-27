@@ -10,7 +10,7 @@ app.use(cors());
 const PORT = process.env.PORT || 8000;
 app.use(logger("dev"));
 app.use(express.json());
-app.get('/', (req, res)=>{
+app.get('/', (req: Request, res: Response)=>{
   res.status(200).json({
     message:"hello"
   })

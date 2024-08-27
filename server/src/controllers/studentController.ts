@@ -1,8 +1,8 @@
 import { db } from "@/db/db";
-import { RequestHandler } from "express";
+import { Request, RequestHandler, Response } from "express";
 
 // Get all students
-export const getStudents: RequestHandler = async (req, res) => {
+export const getStudents: RequestHandler = async (req: Request, res: Response) => {
   try {
     const students = await db.studentModel.findMany();
     return res.status(200).json({
@@ -16,7 +16,7 @@ export const getStudents: RequestHandler = async (req, res) => {
 };
 
 // Get student by ID
-export const getStudentById: RequestHandler = async (req, res) => {
+export const getStudentById: RequestHandler = async (req: Request, res: Response) => {
   try {
     const id = req.params.id;
     const student = await db.studentModel.findUnique({
@@ -38,7 +38,7 @@ export const getStudentById: RequestHandler = async (req, res) => {
 
 // Create a new student
 
-export const createStudent: RequestHandler = async (req, res) => {
+export const createStudent: RequestHandler = async (req: Request, res: Response) => {
   try {
     const {
       firstName,
@@ -107,7 +107,7 @@ console.log(`dob:${dob}`)
   }
 };
 // Update a student ---
-export const updateStudent: RequestHandler = async (req, res) => {
+export const updateStudent: RequestHandler = async (req: Request, res: Response) => {
   try {
     const id = req.params.id;
     const { 
@@ -183,7 +183,7 @@ export const updateStudent: RequestHandler = async (req, res) => {
 };
 
 // Delete a student
-export const deleteStudent: RequestHandler = async (req, res) => {
+export const deleteStudent: RequestHandler = async (req: Request, res: Response) => {
   try {
     const id = req.params.id;
 
