@@ -24,7 +24,7 @@ export const getAllStudentsAsync = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const response = await axios.get(`${apiUrl}/students`);
-      return response.data;
+      return response.data.data;
     } catch (error: any) {
       return rejectWithValue(error.response?.data.error || 'An error occurred');
     }
