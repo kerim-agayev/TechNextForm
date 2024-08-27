@@ -11,6 +11,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.deleteStudent = exports.updateStudent = exports.createStudent = exports.getStudentById = exports.getStudents = void 0;
 const db_1 = require("../db/db");
+// Get all students
 const getStudents = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const students = yield db_1.db.studentModel.findMany();
@@ -25,6 +26,7 @@ const getStudents = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
     }
 });
 exports.getStudents = getStudents;
+// Get student by ID
 const getStudentById = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const id = req.params.id;
@@ -47,10 +49,12 @@ const getStudentById = (req, res) => __awaiter(void 0, void 0, void 0, function*
     }
 });
 exports.getStudentById = getStudentById;
+// Create a new student
 const createStudent = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { firstName, lastName, dob, gender, email, phone, address, school, university, motivation, programmingKnowledge, github, course, } = req.body;
         console.log(`dob:${dob}`);
+        //? email
         const existingEmail = yield db_1.db.studentModel.findUnique({
             where: {
                 email
@@ -59,6 +63,7 @@ const createStudent = (req, res) => __awaiter(void 0, void 0, void 0, function* 
         if (existingEmail) {
             return res.status(409).json({ error: "Student with this email already exists", data: null });
         }
+        //? phone
         const existingPhone = yield db_1.db.studentModel.findUnique({
             where: {
                 phone
@@ -67,6 +72,7 @@ const createStudent = (req, res) => __awaiter(void 0, void 0, void 0, function* 
         if (existingPhone) {
             return res.status(409).json({ error: "Student with this phone already exists", data: null });
         }
+        // Create a new student record
         const newStudent = yield db_1.db.studentModel.create({
             data: {
                 firstName,
@@ -95,16 +101,20 @@ const createStudent = (req, res) => __awaiter(void 0, void 0, void 0, function* 
     }
 });
 exports.createStudent = createStudent;
+// Update a student ---
 const updateStudent = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const id = req.params.id;
         const { firstName, lastName, dob, gender, email, phone, address, school, university, motivation, programmingKnowledge, github, course, } = req.body;
+        // Check if the student exists
         const existingStudent = yield db_1.db.studentModel.findUnique({
             where: { id },
         });
         if (!existingStudent) {
             return res.status(404).json({ message: "Student not found" });
         }
+        // Check if another student has the same email, phone, or GitHub link
+        //? email                 String   @unique
         if (email && email !== existingStudent.email) {
             const existingEmail = yield db_1.db.studentModel.findUnique({
                 where: { email },
@@ -113,6 +123,7 @@ const updateStudent = (req, res) => __awaiter(void 0, void 0, void 0, function* 
                 return res.status(404).json({ message: "Email already exists" });
             }
         }
+        //? phone                 String   @unique
         if (phone && phone !== existingStudent.phone) {
             const existingPhone = yield db_1.db.studentModel.findUnique({
                 where: { phone },
@@ -147,9 +158,11 @@ const updateStudent = (req, res) => __awaiter(void 0, void 0, void 0, function* 
     }
 });
 exports.updateStudent = updateStudent;
+// Delete a student
 const deleteStudent = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const id = req.params.id;
+        // Check if the student exists
         const existingStudent = yield db_1.db.studentModel.findUnique({
             where: { id },
         });

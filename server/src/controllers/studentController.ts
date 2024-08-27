@@ -1,4 +1,4 @@
-import { db } from "@/db/db";
+import { db } from "../db/db";
 import { Request, RequestHandler, Response } from "express";
 
 // Get all students
