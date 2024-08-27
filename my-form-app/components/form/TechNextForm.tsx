@@ -6,6 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 
 import { Form, FormField, FormItem, FormLabel, FormMessage, FormControl, FormDescription} from "../ui/form"//? shadcn ui
 import { Input } from "../ui/input"
+import AiButton from "../MagicButton"
 
 const universities = [
   "Azərbaycan Dövlət İqtisad Universiteti",
@@ -233,7 +234,10 @@ const TechNextForm = () => {
             )}
           />
 
-          <button type="submit" className="bg-blue-500 text-white p-3 rounded mt-4 w-full">Göndər</button>
+          {/* <button type="submit" className="bg-blue-500 text-white p-3 rounded mt-4 w-full">Göndər</button> */}
+       <div className="flex justify-center items-center">
+       <AiButton/>
+       </div>
         </form>
       </Form>
     </div>
