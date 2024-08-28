@@ -1,5 +1,4 @@
-//import express, { Request, Response } from "express";
-const express = require('express')
+import express, { Request, Response } from "express";
 import studentRouter from './routes/studentRoute'
 
 require("dotenv").config();
