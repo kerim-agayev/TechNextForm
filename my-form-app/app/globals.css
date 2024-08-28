@@ -1,7 +1,7 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
+@import url('https://fonts.googleapis.com/css2?family=Luxurious+Script&family=Milonga&family=Oleo+Script:wght@400;700&display=swap');
 @layer base {
   :root {
     --background: 0 0% 100%;

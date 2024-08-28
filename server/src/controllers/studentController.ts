@@ -56,8 +56,6 @@ export const createStudent: RequestHandler = async (req: Request, res: Response)
       course,
     } = req.body;
 
-
-console.log(`dob:${dob}`)
     //? email
     const existingEmail = await db.studentModel.findUnique({
       where:{
@@ -94,6 +92,7 @@ console.log(`dob:${dob}`)
         programmingKnowledge,
         github,
         course,
+   
       },
     });
 
@@ -107,24 +106,35 @@ console.log(`dob:${dob}`)
   }
 };
 // Update a student ---
-export const updateStudent: RequestHandler = async (req: Request, res: Response) => {
+export const updateStudent: RequestHandler = async (req, res) => {
+  const id = req.params.id;
+  const { 
+    firstStageCompleted,
+    secondStageInterviewCompleted,
+    courseCompleted,
+      firstName,
+      lastName,
+      dob,
+      gender,
+      email ,
+      phone,
+      address,
+      school,
+      university ,
+      motivation,
+       programmingKnowledge,
+      github,
+      course,
+    } = req.body;
+    if (courseCompleted) {
+      console.log(`courseCompleted:${courseCompleted}`)
+    }
+if (school) {
+  console.log(`school:${school}`)
+}
   try {
-    const id = req.params.id;
-    const { 
-        firstName,
-        lastName,
-        dob,
-        gender,
-        email ,
-        phone,
-        address,
-        school,
-        university ,
-        motivation,
-         programmingKnowledge,
-        github,
-        course,  } = req.body;
-
+  
+      
     // Check if the student exists
     const existingStudent = await db.studentModel.findUnique({
       where: { id },
@@ -133,7 +143,7 @@ export const updateStudent: RequestHandler = async (req: Request, res: Response)
     if (!existingStudent) {
       return res.status(404).json({ message: "Student not found" });
     }
-
+    console.log(`existing student:${existingStudent}`)
     // Check if another student has the same email, phone, or GitHub link
     //? email                 String   @unique
     if (email && email !== existingStudent.email) {
@@ -171,7 +181,11 @@ export const updateStudent: RequestHandler = async (req: Request, res: Response)
         phone:  phone  ?? existingStudent.phone ,
         programmingKnowledge:  programmingKnowledge   ?? existingStudent.programmingKnowledge,
         school:  school   ?? existingStudent.school,
-        university:  university ?? existingStudent.university  
+        university:  university ?? existingStudent.university,
+        firstStageCompleted:firstStageCompleted ?? existingStudent.firstStageCompleted,
+        secondStageInterviewCompleted:secondStageInterviewCompleted ?? existingStudent.secondStageInterviewCompleted,
+        courseCompleted:courseCompleted ?? existingStudent.courseCompleted
+
       },
     });
 
@@ -181,6 +195,54 @@ export const updateStudent: RequestHandler = async (req: Request, res: Response)
     return res.status(500).json({ message: "Internal server error" });
   }
 };
+
+
+
+
+
+
+
+
+export const updateStudentStages: RequestHandler = async (req: Request, res: Response) => {
+try {
+  const id = req.params.id;
+  const { 
+    firstStageCompleted,
+    secondStageInterviewCompleted,
+    courseCompleted,
+    } = req.body;
+    const existingStudent = await db.studentModel.findUnique({
+      where: { id },
+    });
+
+    if (!existingStudent) {
+      return res.status(404).json({ message: "Student not found" });
+    }
+
+    const updatedStudent = await db.studentModel.update({
+      where: { id },
+      data: {
+        firstStageCompleted:firstStageCompleted ?? existingStudent.firstStageCompleted,
+        secondStageInterviewCompleted:secondStageInterviewCompleted ?? existingStudent.secondStageInterviewCompleted,
+        courseCompleted:courseCompleted ?? existingStudent.courseCompleted,
+
+      },
+    });
+    return res.status(200).json(updatedStudent);
+} catch (error) {
+  console.error(error);
+  return res.status(500).json({ message: "Internal server error" });
+}
+
+}
+
+
+
+
+
+
+
+
 
 // Delete a student
 export const deleteStudent: RequestHandler = async (req: Request, res: Response) => {

@@ -1,12 +1,15 @@
-import React from 'react'
+import { ThreeDCardDemo } from "@/components/animatedCard/ThreeDCard";
+import { ConfettiDemo } from "@/components/confettidemo/ConfettiDemo";
+
+import React from "react";
 
 const SuccessPage = () => {
   return (
- 
-<div>Success page</div>
- 
+    <>
+    <ConfettiDemo/>
+      <ThreeDCardDemo />
+    </>
+  );
+};
 
-  )
-}
-
-export default SuccessPage
+export default SuccessPage;

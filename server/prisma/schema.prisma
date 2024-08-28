@@ -13,20 +13,22 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-
 model StudentModel {
-  id                    String   @id @default(auto()) @map("_id") @db.ObjectId
-  firstName             String
-  lastName              String
-  dob                   DateTime
-  gender                String
-  email                 String   @unique
-  phone                 String   @unique
-  address               String
-  school                String
-  university            String
-  motivation            String
-  programmingKnowledge String
-  github                String?  
-  course                String
+  id                            String   @id @default(auto()) @map("_id") @db.ObjectId
+  firstName                     String
+  lastName                      String
+  dob                           DateTime
+  gender                        String
+  email                         String   @unique
+  phone                         String   @unique
+  address                       String
+  school                        String
+  university                    String
+  motivation                    String
+  programmingKnowledge          String
+  github                        String?
+  course                        String
+  firstStageCompleted           Boolean? @default(false) // Birinci merhele testi 
+  secondStageInterviewCompleted Boolean? @default(false) // İkinci merhele musahibe
+  courseCompleted               Boolean? @default(false) // Kurs bitisi haqqinda melumat
 }

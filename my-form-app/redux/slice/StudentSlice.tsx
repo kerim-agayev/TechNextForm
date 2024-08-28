@@ -22,20 +22,27 @@ export interface Student {
     programmingKnowledge: string;
     github?: string;  // Optional field
     course: string;
+    firstStageCompleted?: boolean;  // Optional field to match the Prisma model
+    secondStageInterviewCompleted?: boolean;  // Optional field to match the Prisma model
+    courseCompleted?: boolean;  // Optional field to match the Prisma model
   }
  
   interface StudentState {
     students: Student[];
     student: Student | null;
     isLoading: boolean;
+    isLoadingDelete: boolean;
     error: string | null  ;
+    errorDelete: string | null  ;
   }
   
   const initialState: StudentState = {
     students: [],
     student: null,
     isLoading: false,
+    isLoadingDelete: false,
     error: null,
+    errorDelete: null,
   };
   
 const studentSlice = createSlice({
@@ -97,15 +104,15 @@ const studentSlice = createSlice({
       })
       //? delete
       .addCase(deleteStudentAsync.pending, (state) => {
-        state.isLoading = true;
+        state.isLoadingDelete = true;
       })
       .addCase(deleteStudentAsync.fulfilled, (state, action) => {
-        state.isLoading = false;
+        state.isLoadingDelete = false;
         state.students = state.students.filter((student) => student.id !== action.payload);
       })
       .addCase(deleteStudentAsync.rejected, (state, action) => {
-        state.isLoading = false;
-        state.error = action.payload as string;
+        state.isLoadingDelete = false;
+        state.errorDelete = action.payload as string;
       });
   },
 });

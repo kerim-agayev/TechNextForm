@@ -89,6 +89,11 @@ const config = {
         orbit: "orbit calc(var(--duration)*1s) linear infinite",
         sparkle: "sparkle 2s ease-in-out infinite",
       },
+      fontFamily:{
+        Milonga:["Milonga", "serif"],
+        Oleo:["Oleo Script", "system-ui"],
+        Luxurioues:["Luxurious Script", "cursive"]
+      }
       
     },
   },

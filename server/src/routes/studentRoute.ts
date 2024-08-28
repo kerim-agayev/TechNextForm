@@ -21,6 +21,7 @@ studentRouter.post("/students", createStudent);
 // PUT update a student
 studentRouter.put("/students/:id", updateStudent);
 
+
 // DELETE a student
 studentRouter.delete("/students/:id", deleteStudent);
 

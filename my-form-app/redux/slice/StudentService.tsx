@@ -4,7 +4,7 @@ import axios from "axios";
 const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
 interface StudentData {
     firstName: string;
-    lastName: string;
+    lastName: string; 
     dob: Date;
     gender: string;
     email: string;
@@ -16,6 +16,9 @@ interface StudentData {
     programmingKnowledge: string;
     github?: string | null; 
     course: string;
+    firstStageCompleted?: boolean;  // Optional field
+    secondStageInterviewCompleted?: boolean;  // Optional field
+    courseCompleted?: boolean;  // Optional field
   }
   
 // Get all students

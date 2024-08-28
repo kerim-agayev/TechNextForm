@@ -1,7 +1,8 @@
 {
   "compilerOptions": {
+ 
     "moduleResolution": "node",
-    "module": "ES2020",
+    "module": "CommonJS",
     "target": "ES2016",
     "noImplicitAny": true,
     "removeComments": true,

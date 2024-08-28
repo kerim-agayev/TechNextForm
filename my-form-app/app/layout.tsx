@@ -19,6 +19,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      
       <body className={inter.className}>
         <StoreProvider>
           <div className="mb-8">
@@ -26,7 +27,6 @@ export default function RootLayout({
           </div>
           {children}
           <div>
-            <Footer />
           </div>
         </StoreProvider>
       </body>

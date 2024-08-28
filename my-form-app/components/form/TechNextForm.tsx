@@ -11,7 +11,7 @@ import { useAppDispatch, useAppSelector } from "@/lib/hooks";
 import { message, Spin } from "antd";
 import { useRouter } from "next/navigation";
 
-const courses = [
+export const courses = [
   "Frontend Development",
   "Backend Development",
   "Full Stack (MERN) Development",
@@ -23,7 +23,7 @@ const courses = [
   "AI & Machine Learning",
   "Cybersecurity",
 ];
-const universities = [
+export const universities = [
   "Azərbaycan Dövlət İqtisad Universiteti",
   "Bakı Dövlət Universiteti",
   "Azərbaycan Texniki Universiteti",
@@ -49,6 +49,12 @@ const universities = [
   "Azərbaycan Turizm və Menecment Universiteti",
   "Mingəçevir Dövlət Universiteti",
 ];
+export const genders = [
+  "Male",
+  "Female",
+  "Other",
+];
+
 
 const formSchema = z.object({
   firstName: z.string().min(2, { message: "Ad ən az 2 simvol olmalıdır." }),
@@ -69,7 +75,7 @@ const formSchema = z.object({
     message: "Uygun bir telefon nömrəsi daxil edin (məs: +994 51 811 81 21).",
   }),
 
-  address: z.string().min(5, { message: "Ünvan ən az 5 simvol olmalıdır." }),
+  address: z.string().min(3, { message: "Ünvan ən az 5 simvol olmalıdır." }),
   school: z.string().min(2, { message: "Məktəb adı ən az 2 simvol olmalıdır." }),
   university: z.string().min(1, { message: "Universitet seçilməlidir." }),
   motivation: z
