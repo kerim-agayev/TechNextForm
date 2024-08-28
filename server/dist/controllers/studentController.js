@@ -1,4 +1,3 @@
-"use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -8,12 +7,10 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteStudent = exports.updateStudent = exports.createStudent = exports.getStudentById = exports.getStudents = void 0;
-const db_1 = require("../db/db");
-const getStudents = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+import { db } from "../db/db";
+export const getStudents = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const students = yield db_1.db.studentModel.findMany();
+        const students = yield db.studentModel.findMany();
         return res.status(200).json({
             data: students,
             error: null
@@ -24,11 +21,10 @@ const getStudents = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
         return res.status(500).json({ error: "Internal server error", data: null });
     }
 });
-exports.getStudents = getStudents;
-const getStudentById = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+export const getStudentById = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const id = req.params.id;
-        const student = yield db_1.db.studentModel.findUnique({
+        const student = yield db.studentModel.findUnique({
             where: { id },
         });
         if (student) {
@@ -46,12 +42,11 @@ const getStudentById = (req, res) => __awaiter(void 0, void 0, void 0, function*
         return res.status(500).json({ error: "Internal server error", data: null });
     }
 });
-exports.getStudentById = getStudentById;
-const createStudent = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+export const createStudent = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { firstName, lastName, dob, gender, email, phone, address, school, university, motivation, programmingKnowledge, github, course, } = req.body;
         console.log(`dob:${dob}`);
-        const existingEmail = yield db_1.db.studentModel.findUnique({
+        const existingEmail = yield db.studentModel.findUnique({
             where: {
                 email
             }
@@ -59,7 +54,7 @@ const createStudent = (req, res) => __awaiter(void 0, void 0, void 0, function* 
         if (existingEmail) {
             return res.status(409).json({ error: "Student with this email already exists", data: null });
         }
-        const existingPhone = yield db_1.db.studentModel.findUnique({
+        const existingPhone = yield db.studentModel.findUnique({
             where: {
                 phone
             }
@@ -67,7 +62,7 @@ const createStudent = (req, res) => __awaiter(void 0, void 0, void 0, function* 
         if (existingPhone) {
             return res.status(409).json({ error: "Student with this phone already exists", data: null });
         }
-        const newStudent = yield db_1.db.studentModel.create({
+        const newStudent = yield db.studentModel.create({
             data: {
                 firstName,
                 lastName,
@@ -94,19 +89,18 @@ const createStudent = (req, res) => __awaiter(void 0, void 0, void 0, function* 
         return res.status(500).json({ error: "Internal server error", data: null });
     }
 });
-exports.createStudent = createStudent;
-const updateStudent = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+export const updateStudent = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const id = req.params.id;
         const { firstName, lastName, dob, gender, email, phone, address, school, university, motivation, programmingKnowledge, github, course, } = req.body;
-        const existingStudent = yield db_1.db.studentModel.findUnique({
+        const existingStudent = yield db.studentModel.findUnique({
             where: { id },
         });
         if (!existingStudent) {
             return res.status(404).json({ message: "Student not found" });
         }
         if (email && email !== existingStudent.email) {
-            const existingEmail = yield db_1.db.studentModel.findUnique({
+            const existingEmail = yield db.studentModel.findUnique({
                 where: { email },
             });
             if (existingEmail) {
@@ -114,14 +108,14 @@ const updateStudent = (req, res) => __awaiter(void 0, void 0, void 0, function* 
             }
         }
         if (phone && phone !== existingStudent.phone) {
-            const existingPhone = yield db_1.db.studentModel.findUnique({
+            const existingPhone = yield db.studentModel.findUnique({
                 where: { phone },
             });
             if (existingPhone) {
                 return res.status(404).json({ message: "Phone already exists" });
             }
         }
-        const updatedStudent = yield db_1.db.studentModel.update({
+        const updatedStudent = yield db.studentModel.update({
             where: { id },
             data: {
                 address: address !== null && address !== void 0 ? address : existingStudent.address,
@@ -146,17 +140,16 @@ const updateStudent = (req, res) => __awaiter(void 0, void 0, void 0, function* 
         return res.status(500).json({ message: "Internal server error" });
     }
 });
-exports.updateStudent = updateStudent;
-const deleteStudent = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+export const deleteStudent = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const id = req.params.id;
-        const existingStudent = yield db_1.db.studentModel.findUnique({
+        const existingStudent = yield db.studentModel.findUnique({
             where: { id },
         });
         if (!existingStudent) {
             return res.status(404).json({ error: "Student not found", data: null });
         }
-        yield db_1.db.studentModel.delete({
+        yield db.studentModel.delete({
             where: { id },
         });
         return res.status(200).json({ data: "Student deleted successfully", error: null });
@@ -166,4 +159,3 @@ const deleteStudent = (req, res) => __awaiter(void 0, void 0, void 0, function* 
         return res.status(500).json({ error: "Internal server error", data: null });
     }
 });
-exports.deleteStudent = deleteStudent;
