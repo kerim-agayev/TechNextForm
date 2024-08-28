@@ -268,3 +268,19 @@ export const deleteStudent: RequestHandler = async (req: Request, res: Response)
     return res.status(500).json({ error: "Internal server error" , data:null});
   }
 };
+
+//? delete all
+export const deleteAllStudent: RequestHandler = async (req: Request, res: Response) => {
+  try {
+   
+
+    // Check if the student exists
+  
+    await db.studentModel.deleteMany()
+
+    return res.status(200).json({ data: "Student deleted successfully" , error:null});
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: "Internal server error" , data:null});
+  }
+};

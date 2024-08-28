@@ -1,5 +1,6 @@
 import express, { Request, Response } from "express";
 import studentRouter from './routes/studentRoute';
+import loginRouter from './routes/login';
 import dotenv from 'dotenv';
 import cors from 'cors';
 import morgan from 'morgan';
@@ -23,4 +24,8 @@ app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
 });
 
+
+
+
 app.use("/api/v1", studentRouter);
+app.use("/api/v1", loginRouter);

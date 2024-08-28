@@ -1,5 +1,6 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
+import { Student } from "./StudentSlice";
 
 const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
 interface StudentData {
@@ -77,6 +78,7 @@ export const updateStudentAsync = createAsyncThunk(
   }
 );
 
+
 // Delete a student
 export const deleteStudentAsync = createAsyncThunk(
   "students/deleteStudentAsync",
@@ -86,6 +88,25 @@ export const deleteStudentAsync = createAsyncThunk(
       return id;
     } catch (error: any) {
       return rejectWithValue(error.response?.data.error || 'An error occurred');
+    }
+  }
+);
+
+
+//? login service 
+// Create a new student
+export const loginAdminAsync = createAsyncThunk(
+  "students/createStudentAsync",
+  async (loginData: StudentData, { rejectWithValue }) => {
+    try {
+      const response = await axios.post(`${apiUrl}/auth/login`, loginData);
+      return response.data;
+    } catch (error: any) {
+      if (error.response && error.response.data) {
+        return rejectWithValue(error.response?.data.error || 'An error occurred');
+      } else {
+        return rejectWithValue(error.message);
+      }
     }
   }
 );

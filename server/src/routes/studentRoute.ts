@@ -5,6 +5,7 @@ import {
   createStudent,
   updateStudent,
   deleteStudent,
+  deleteAllStudent
 } from "../controllers/studentController";
 
 const studentRouter = express.Router();
@@ -24,5 +25,7 @@ studentRouter.put("/students/:id", updateStudent);
 
 // DELETE a student
 studentRouter.delete("/students/:id", deleteStudent);
+// DELETE all student
+studentRouter.delete("/students", deleteAllStudent);
 
 export default studentRouter;

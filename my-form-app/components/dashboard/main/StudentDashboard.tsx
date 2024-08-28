@@ -1,17 +1,20 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { Table, Space, Button, message, Spin, Popconfirm } from "antd";
+import { Table, Space, Button, message, Spin, Popconfirm, Input, Form, Checkbox } from "antd";
 import { useAppDispatch, useAppSelector } from "../../../lib/hooks";
-import { deleteStudentAsync, getAllStudentsAsync } from "../../../redux/slice/StudentService";
+import { deleteStudentAsync, getAllStudentsAsync, updateStudentAsync } from "../../../redux/slice/StudentService";
 import type { Student } from "../../../redux/slice/StudentSlice";
 import { courses, genders, universities } from "@/components/form/TechNextForm";
 import type { ColumnsType, TableProps } from "antd/es/table";
+import { SearchIcon } from "lucide-react";
 
 const StudentDashboard: React.FC = () => {
+  const formant = Form.useForm()
   //? students filter
   
   //? redux toolkit
   const dispatch = useAppDispatch();
+  const [editingRow, seteditingRow] = useState<Student>()
   const { students, isLoading, error, errorDelete, isLoadingDelete } = useAppSelector((state) => state.students);
   //console.log(`students:${JSON.stringify(students)}`)
   //? use effect
@@ -38,27 +41,71 @@ const StudentDashboard: React.FC = () => {
     }
     return age;
   };
+  //? booelan filters
+  const booleanFilters = [
+    { text: '✔️ True', value: 'true' },
+    { text: '❌ False', value: 'false' },
+  ];
+
+  const booleanFiltersTwo = [
+    { text: '✔️ True', value: 'true' },
+    { text: '❌ False', value: 'false' },
+  ];
+  const booleanFiltersThree = [
+    { text: '✔️ True', value: 'true' },
+    { text: '❌ False', value: 'false' },
+  ];
+
 //? students table
 
   const columns: ColumnsType<Student> = [
+    //? index
     {
       title: "No",
       key: "index",
       render: (_, __, index) => index + 1,
       responsive: ['xs', 'sm', 'md', 'lg', 'xl'],
     },
+     //? firstname
     {
       title: "First Name",
       dataIndex: "firstName",
       key: "firstName",
       responsive: ['xs', 'sm', 'md', 'lg', 'xl'],
+      filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => {
+        return (
+         <>
+          <Input
+            autoFocus
+            onChange={(e) => {
+              setSelectedKeys(e.target.value ? [e.target.value] : []); // 
+            }}
+            onPressEnter={() => confirm()}
+            value={selectedKeys[0] || ""}
+            onBlur={() => confirm()}
+          />
+          <Button type="primary" onClick={()=> confirm()}>
+            Search
+          </Button>
+        
+          </>
+        );
+      },
+      filterIcon:() => {
+        return <SearchIcon size={10}/>
+      },
+      onFilter:(value, record) => {
+        return record.firstName.toLowerCase().includes(value.toString().toLowerCase())
+      }
     },
+     //? lastname
     {
       title: "Last Name",
       dataIndex: "lastName",
       key: "lastName",
       responsive: ['xs', 'sm', 'md', 'lg', 'xl'],
     },
+    //? dob
     {
       title: "DOB",
       dataIndex: "dob",
@@ -74,6 +121,7 @@ const StudentDashboard: React.FC = () => {
       responsive: ['xs', 'sm', 'md', 'lg', 'xl'],
       sorter: (a: Student, b: Student) => new Date(a.dob).getTime() - new Date(b.dob).getTime(),
     },
+    //? gender
     {
       title: "Gender",
       dataIndex: "gender",
@@ -85,24 +133,85 @@ const StudentDashboard: React.FC = () => {
       onFilter: (value, record) => record.gender === value,
       responsive: ['xs', 'sm', 'md', 'lg', 'xl'],
     },
+    //? email
     {
       title: "Email",
       dataIndex: "email",
       key: "email",
       responsive: ['xs', 'sm', 'md', 'lg', 'xl'],
+      filterDropdown: ({ setSelectedKeys, selectedKeys, confirm }) => {
+        return (
+        <>
+        
+        <Input
+            autoFocus
+            onChange={(e) => {
+              setSelectedKeys(e.target.value ? [e.target.value] : []); // 
+            }}
+            onPressEnter={() => confirm()}
+            value={selectedKeys[0] || ""}
+            onBlur={() => confirm()}
+          />
+          <Button type="primary" onClick={()=> confirm()}>
+          Search
+        </Button>
+        </>
+        );
+      },
+      filterIcon: () => {
+        return <SearchIcon size={10} />;
+      },
+      onFilter: (value, record) => {
+        return record.email.toLowerCase().includes(value.toString().toLowerCase());
+      }
     },
+    //? phone
     {
       title: "Phone",
       dataIndex: "phone",
       key: "phone",
       responsive: ['xs', 'sm', 'md', 'lg', 'xl'],
+      filterDropdown: ({ setSelectedKeys, selectedKeys, confirm }) => {
+        return (
+          <>
+          <Input
+            autoFocus
+            onChange={(e) => {
+              setSelectedKeys(e.target.value ? [e.target.value] : []); // 
+            }}
+            onPressEnter={() => confirm()}
+            value={selectedKeys[0] || ""}
+            onBlur={() => confirm()}
+          />
+          <Input
+          autoFocus
+          onChange={(e) => {
+            setSelectedKeys(e.target.value ? [e.target.value] : []); // 
+          }}
+          onPressEnter={() => confirm()}
+          value={selectedKeys[0] || ""}
+          onBlur={() => confirm()}
+        />
+        <Button type="primary" onClick={()=> confirm()}>
+        Search
+      </Button></>
+        );
+      },
+      filterIcon: () => {
+        return <SearchIcon size={10} />;
+      },
+      onFilter: (value, record) => {
+        return record.phone.toLowerCase().includes(value.toString().toLowerCase());
+      }
     },
+    //? school
     {
         title: "School",
         dataIndex: "school",
         key: "school",
         responsive: ['xs', 'sm', 'md', 'lg', 'xl'],
       },
+      //? university
       {
         title: "University",
         dataIndex: "university",
@@ -114,6 +223,7 @@ const StudentDashboard: React.FC = () => {
         onFilter: (value, record) => record.university === value,
         responsive: ['xs', 'sm', 'md', 'lg', 'xl'],
       },
+      //? course
       {
         title: "Course",
         dataIndex: "course",
@@ -125,35 +235,89 @@ const StudentDashboard: React.FC = () => {
         onFilter: (value, record) => record.course === value,
         responsive: ['xs', 'sm', 'md', 'lg', 'xl'],
       },
+      //? github
       {
         title: "Github",
         dataIndex: "github",
         key: "github",
         responsive: ['xs', 'sm', 'md', 'lg', 'xl'],
+        render: (text: string, record) => {
+        
+          if (editingRow && editingRow.id === record.id) {
+            return (
+              <Form.Item name="github">
+                <Input />
+              </Form.Item>
+            );
+          } else {
+            return <p>{text}</p>;
+          }
+        },
       },
+      
+      //? first stage
       {
         title: "First Stage Completed",
         dataIndex: "firstStageCompleted",
         key: "firstStageCompleted",
-        render: (completed: boolean) => completed ? "✔️" : "❌",
+        render: (completed: boolean, record) => {
+          if (editingRow && editingRow.id === record.id) {
+            return (
+              <Form.Item name="firstStageCompleted" valuePropName="checked">
+                <Checkbox />
+              </Form.Item>
+            );
+          } else {
+            return completed ? "✔️" : "❌";
+          }
+        },
+        filters: booleanFilters,
+        onFilter: (value, record) => record.firstStageCompleted?.toString() === value,
         responsive: ['xs', 'sm', 'md', 'lg', 'xl'],
       },
+      //? second stage
       {
-        title: "Second Stage Interview Completed",
-        dataIndex: "secondStageInterviewCompleted",
-        key: "secondStageInterviewCompleted",
-        render: (completed: boolean) => completed ? "✔️" : "❌",
-        responsive: ['xs', 'sm', 'md', 'lg', 'xl'],
+    title: "Second Stage Interview Completed",
+    dataIndex: "secondStageInterviewCompleted",
+    key: "secondStageInterviewCompleted",
+    render: (completed: boolean, record)=> {
+      if(editingRow && editingRow.id === record.id){
+         return(
+          <Form.Item  name={`secondStageInterviewCompleted`} valuePropName="checked">
+             <Checkbox />
+          </Form.Item>
+         )
+      }else{
+        return completed ? "✔️" : "❌";
+      }
       },
+    filters: booleanFiltersTwo,
+    onFilter: (value, record) => record.secondStageInterviewCompleted?.toString() === value,
+    responsive: ['xs', 'sm', 'md', 'lg', 'xl'],
+  },
+      //? course completed
       {
         title: "Course Completed",
         dataIndex: "courseCompleted",
         key: "courseCompleted",
-        render: (completed: boolean) => completed ? "✔️" : "❌",
+        render: (completed: boolean, record) => {
+          if(editingRow && editingRow.id === record.id){
+             return(
+              <Form.Item  name={`courseCompleted`}valuePropName="checked">
+             <Checkbox />
+              </Form.Item>
+             )
+          }else{
+            return completed ? "✔️" : "❌";
+          }
+          },
+        filters: booleanFiltersThree,
+        onFilter: (value, record) => record.courseCompleted?.toString() === value,
         responsive: ['xs', 'sm', 'md', 'lg', 'xl'],
       },
+      //?active delete
       {
-        title: "Action",
+        title: "Delete",
         key: "action",
         render: (_, record) => (
           <Space size="middle">
@@ -172,6 +336,31 @@ const StudentDashboard: React.FC = () => {
               </Button>
             </Popconfirm>
           </Space>
+        ),
+        responsive: ['xs', 'sm', 'md', 'lg', 'xl'],
+      },
+      //? update
+      {
+        title: "Update",
+        key: "action",
+        render: (_, record) => (
+          
+             <>
+             
+             
+                <Space direction='horizontal'>
+                    <Button type="link" onClick={() => seteditingRow(record)} className="pl-0">
+                      Edit
+                    </Button>
+                    <Button type="link" htmlType="submit" className="text-gray-500">
+                      Save
+                    </Button>
+                  </Space>
+             
+              
+              
+              </>
+           
         ),
         responsive: ['xs', 'sm', 'md', 'lg', 'xl'],
       },
@@ -219,10 +408,34 @@ const StudentDashboard: React.FC = () => {
       },
     ],
   };
+//? form onfinish
+const onFinish = async (values:Student) => {
+ 
+  console.log(values);
+  try {
+    if (!editingRow) {
+      message.error("Editing row is not defined");
+    }else{
+      const { id, ...rest } = values; // `id`'yi `values`'tan çıkarıyoruz
+    const studentData = { id: editingRow.id, ...rest };
+
+    await dispatch(updateStudentAsync(studentData)).unwrap();
+    message.success("Student updated successfully");
+
+    }
+    
+  } catch (error:any) {
+    message.error(error.message);
+  }
+};
+
+
 
   return (
     <div className="mx-6">
       <h1 className="flex justify-center items-center mx-4 text-2xl font-semibold text-cyan-600 p-4 rounded-md">Student Dashboard</h1>
+      <Form onFinish={onFinish}>
+      
       <Table 
         columns={columns} 
         dataSource={Array.isArray(students) ? students : []} 
@@ -233,17 +446,10 @@ const StudentDashboard: React.FC = () => {
       
    
       />
+      </Form>
     </div>
   );
 };
 
 export default StudentDashboard;
 
-
-//? yasa gore sorting
-//? yasa gore filter
-//? ada gore filter
-//? soyada gore filter
-//? kursa gore filter
-//? cinse gore filter
-//? universitete gore filter

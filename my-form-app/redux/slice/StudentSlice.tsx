@@ -5,6 +5,7 @@ import {
   createStudentAsync,
   updateStudentAsync,
   deleteStudentAsync,
+  
 } from "./StudentService";
 
 export interface Student {
@@ -30,10 +31,15 @@ export interface Student {
   interface StudentState {
     students: Student[];
     student: Student | null;
+    //? loading
     isLoading: boolean;
     isLoadingDelete: boolean;
+   
+
+    //? errors
     error: string | null  ;
     errorDelete: string | null  ;
+  
   }
   
   const initialState: StudentState = {
@@ -43,6 +49,7 @@ export interface Student {
     isLoadingDelete: false,
     error: null,
     errorDelete: null,
+   
   };
   
 const studentSlice = createSlice({
@@ -113,7 +120,8 @@ const studentSlice = createSlice({
       .addCase(deleteStudentAsync.rejected, (state, action) => {
         state.isLoadingDelete = false;
         state.errorDelete = action.payload as string;
-      });
+      })
+    
   },
 });
 
