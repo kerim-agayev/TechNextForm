@@ -15,11 +15,12 @@ interface StudentData {
     university: string;
     motivation: string;
     programmingKnowledge: string;
-    github?: string | null; 
     course: string;
     firstStageCompleted?: boolean;  // Optional field
     secondStageInterviewCompleted?: boolean;  // Optional field
     courseCompleted?: boolean;  // Optional field
+    createdAt: Date; 
+    cv: File; // CV file
   }
   
 // Get all students
@@ -49,21 +50,45 @@ export const getStudentByIdAsync = createAsyncThunk(
 );
 
 // Create a new student
-export const createStudentAsync = createAsyncThunk(
-    "students/createStudentAsync",
-    async (studentData: StudentData, { rejectWithValue }) => {
-      try {
-        const response = await axios.post(`${apiUrl}/students`, studentData);
-        return response.data;
-      } catch (error: any) {
-        if (error.response && error.response.data) {
-          return rejectWithValue(error.response?.data.error || 'An error occurred');
-        } else {
-          return rejectWithValue(error.message);
-        }
-      }
-    }
-  );
+
+// export const createStudentAsync = createAsyncThunk(
+//     "students/createStudentAsync",
+//     async (studentData: StudentData, { rejectWithValue }) => {
+//       try {
+//         const response = await axios.post(`${apiUrl}/students`, studentData);
+//         return response.data;
+//       } catch (error: any) {
+//         if (error.response && error.response.data) {
+//           return rejectWithValue(error.response?.data.error || 'An error occurred');
+//         } else {
+//           return rejectWithValue(error.message);
+//         }
+//       }
+//     }
+//   );
+// Create a new student
+// export const createStudentAsync = createAsyncThunk(
+//   "students/createStudentAsync",
+//   async (studentData: FormData, { rejectWithValue }) => {
+//     try {
+//       // `multipart/form-data` 
+//       const response = await axios.post(`${apiUrl}/students`, studentData, {
+//         headers: {
+//           'Content-Type': 'multipart/form-data', //
+//         },
+//       });
+//       return response.data;
+//     } catch (error: any) {
+//       if (error.response && error.response.data) {
+//         return rejectWithValue(error.response?.data.error || 'An error occurred');
+//       } else {
+//         return rejectWithValue(error.message);
+//       }
+//     }
+//   }
+// );
+
+
 
 // Update a student
 export const updateStudentAsync = createAsyncThunk(
@@ -110,3 +135,43 @@ export const loginAdminAsync = createAsyncThunk(
     }
   }
 );
+
+
+export const createStudentAsync = createAsyncThunk(
+  "students/createStudentAsync",
+  async (studentData: StudentData,{ rejectWithValue }) => {
+    try {
+      const formData = new FormData();
+      formData.append('firstName', studentData.firstName);
+      formData.append('lastName', studentData.lastName);
+      formData.append('dob', studentData.dob.toISOString());
+      formData.append('gender', studentData.gender);
+      formData.append('email', studentData.email);
+      formData.append('phone', studentData.phone);
+      formData.append('address', studentData.address);
+      formData.append('school', studentData.school);
+      formData.append('university', studentData.university);
+      formData.append('motivation', studentData.motivation);
+      formData.append('programmingKnowledge', studentData.programmingKnowledge);
+      formData.append('course', studentData.course);
+      formData.append('cv', studentData.cv);
+      
+      // `multipart/form-data` 
+      const response = await axios.post(`${apiUrl}/students`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data', //
+        },
+      });
+      return response.data;
+    } catch (error: any) {
+      if (error.response && error.response.data) {
+        return rejectWithValue(error.response?.data.error || 'An error occurred');
+      } else {
+        return rejectWithValue(error.message);
+      }
+    }
+  }
+);
+
+
+ 

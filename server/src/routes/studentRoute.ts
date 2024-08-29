@@ -7,6 +7,7 @@ import {
   deleteStudent,
   deleteAllStudent
 } from "../controllers/studentController";
+import { upload } from "@/middlewares/multer";
 
 const studentRouter = express.Router();
 
@@ -17,12 +18,10 @@ studentRouter.get("/students", getStudents);
 studentRouter.get("/students/:id", getStudentById);
 
 // POST create a new student
-studentRouter.post("/students", createStudent);
+studentRouter.post("/students",upload.single('image') ,  createStudent);
 
 // PUT update a student
 studentRouter.put("/students/:id", updateStudent);
-
-
 // DELETE a student
 studentRouter.delete("/students/:id", deleteStudent);
 // DELETE all student

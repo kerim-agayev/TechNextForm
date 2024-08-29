@@ -15,20 +15,28 @@ datasource db {
 
 model StudentModel {
   id                            String   @id @default(auto()) @map("_id") @db.ObjectId
-  firstName                     String
-  lastName                      String
-  dob                           DateTime
-  gender                        String
-  email                         String   @unique
-  phone                         String   @unique
-  address                       String
-  school                        String
-  university                    String
-  motivation                    String
-  programmingKnowledge          String
-  github                        String?
-  course                        String
+  firstName                     String //? +
+  lastName                      String //? +
+  fatherName                    String? //? new
+  dob                           DateTime //?+ birthdate duzelt
+  gender                        String    //? +
+  email                         String   @unique   //? +
+  phone                         String   @unique //? phoneNumber duzelt 
+  address                       String //? --- lazim deyil
+  school                        String //? school goturek
+  university                    String //? university sil
+  motivation                    String //? motivationLetter
+  programmingKnowledge          String //? --- 
+  course                        String  //? muemmali
   firstStageCompleted           Boolean? @default(false) // Birinci merhele testi 
   secondStageInterviewCompleted Boolean? @default(false) // İkinci merhele musahibe
-  courseCompleted               Boolean? @default(false) // Kurs bitisi haqqinda melumat
+  courseCompleted               Boolean? @default(false) // Kurs bitisi haqqinda melumat 
+  createdAt          DateTime     @default(now())  //? 
+  updatedAt          DateTime     @updatedAt //? sil 
+  //? finCode
+  //? CvUrl
+  //? majority id - ixtisaas
+  //? cv upload
+  cloudinary_id      String?
+  cv                  String?
 }

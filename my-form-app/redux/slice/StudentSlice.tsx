@@ -21,11 +21,12 @@ export interface Student {
     university: string;
     motivation: string;
     programmingKnowledge: string;
-    github?: string;  // Optional field
     course: string;
     firstStageCompleted?: boolean;  // Optional field to match the Prisma model
     secondStageInterviewCompleted?: boolean;  // Optional field to match the Prisma model
     courseCompleted?: boolean;  // Optional field to match the Prisma model
+    createdAt: Date; 
+    cv: File; // CV file
   }
  
   interface StudentState {

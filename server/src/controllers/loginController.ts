@@ -13,8 +13,7 @@ const authorizeUser: RequestHandler = async (req, res) => {
         email,
         password
       } = req.body;
-
-    
+      
       const AccessToken = generateToken({email, password})
    
   

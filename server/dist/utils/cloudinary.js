@@ -9,16 +9,22 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.authorizeUser = void 0;
-const generateJWT_1 = require("../utils/generateJWT");
-const authorizeUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+exports.cloudinary = void 0;
+const cloudinary = require('cloudinary').v2;
+exports.cloudinary = cloudinary;
+require("dotenv").config();
+cloudinary.config({
+    cloud_name: process.env.CLOUD_NAME,
+    api_key: process.env.CLOUD_API_KEY,
+    api_secret: process.env.CLOUD_API_SECRET
+});
+const uploadToCloudinary = (filePath) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const { email, password } = req.body;
-        const AccessToken = (0, generateJWT_1.generateToken)({ email, password });
-        res.status(200).json({ accessToken: AccessToken, error: null });
+        const result = yield cloudinary.uploader.upload(filePath);
+        console.log('Upload Result:', result);
     }
     catch (error) {
-        res.status(500).json({ error: "error bas verdi.", data: null });
+        console.error('Upload Error:', error);
     }
 });
-exports.authorizeUser = authorizeUser;
+uploadToCloudinary('./uploads/test-file.jpg');

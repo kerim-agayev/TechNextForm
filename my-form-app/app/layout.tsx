@@ -4,6 +4,7 @@ import "./globals.css";
 import Header from "@/components/header/Header";
 import Footer from "@/components/footer/Footer";
 import StoreProvider from "./StoreProvider";
+import RECaptchaProvider from "@/components/recaptcha/RECaptcha";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -25,7 +26,10 @@ export default function RootLayout({
           <div className="mb-8">
           
           </div>
+          <RECaptchaProvider>
           {children}
+          </RECaptchaProvider>
+         
           <div>
           </div>
         </StoreProvider>

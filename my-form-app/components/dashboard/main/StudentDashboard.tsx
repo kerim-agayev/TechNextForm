@@ -9,9 +9,8 @@ import type { ColumnsType, TableProps } from "antd/es/table";
 import { SearchIcon } from "lucide-react";
 
 const StudentDashboard: React.FC = () => {
-  const formant = Form.useForm()
-  //? students filter
-  
+
+ 
   //? redux toolkit
   const dispatch = useAppDispatch();
   const [editingRow, seteditingRow] = useState<Student>()
@@ -235,26 +234,6 @@ const StudentDashboard: React.FC = () => {
         onFilter: (value, record) => record.course === value,
         responsive: ['xs', 'sm', 'md', 'lg', 'xl'],
       },
-      //? github
-      {
-        title: "Github",
-        dataIndex: "github",
-        key: "github",
-        responsive: ['xs', 'sm', 'md', 'lg', 'xl'],
-        render: (text: string, record) => {
-        
-          if (editingRow && editingRow.id === record.id) {
-            return (
-              <Form.Item name="github">
-                <Input />
-              </Form.Item>
-            );
-          } else {
-            return <p>{text}</p>;
-          }
-        },
-      },
-      
       //? first stage
       {
         title: "First Stage Completed",
@@ -313,6 +292,15 @@ const StudentDashboard: React.FC = () => {
           },
         filters: booleanFiltersThree,
         onFilter: (value, record) => record.courseCompleted?.toString() === value,
+        responsive: ['xs', 'sm', 'md', 'lg', 'xl'],
+      },
+      //? createdAt
+      {
+        title: "Created At",
+        dataIndex: "createdAt",
+        key: "createdAt",
+        render: (createdAt: Date) => new Date(createdAt).toLocaleDateString(),
+        sorter: (a: Student, b: Student) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
         responsive: ['xs', 'sm', 'md', 'lg', 'xl'],
       },
       //?active delete
@@ -435,7 +423,9 @@ const onFinish = async (values:Student) => {
     <div className="mx-6">
       <h1 className="flex justify-center items-center mx-4 text-2xl font-semibold text-cyan-600 p-4 rounded-md">Student Dashboard</h1>
       <Form onFinish={onFinish}>
-      
+      {/* <div className="my-4 flex items-center justify-center">
+      <Input.Search  placeholder="search..." className="w-1/2 "/>
+      </div> */}
       <Table 
         columns={columns} 
         dataSource={Array.isArray(students) ? students : []} 

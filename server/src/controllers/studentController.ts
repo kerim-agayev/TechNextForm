@@ -1,6 +1,7 @@
+import { cloudinary } from "@/utils/cloudinary";
 import { db } from "../db/db";
 import { Request, RequestHandler, Response } from "express";
-
+import fs from "fs";
 // Get all students
 export const getStudents: RequestHandler = async (req: Request, res: Response) => {
   try {
@@ -52,10 +53,20 @@ export const createStudent: RequestHandler = async (req: Request, res: Response)
       university,
       motivation,
       programmingKnowledge,
-      github,
       course,
     } = req.body;
+    console.log(`Received data: ${JSON.stringify(req.body)}`);
 
+  //upload image to cloudinary
+  if (!req.file) {
+    return res.status(400).json({ error: "CV file is required", data: null });
+  }
+  const { path } = req.file;
+  console.log(`path:${path}`)
+  const result = await cloudinary.uploader.upload(path);
+  if (!result || !result.secure_url) {
+    return res.status(500).json({ error: "Failed to upload CV to Cloudinary", data: null });
+  }
     //? email
     const existingEmail = await db.studentModel.findUnique({
       where:{
@@ -76,7 +87,7 @@ export const createStudent: RequestHandler = async (req: Request, res: Response)
     }
     
 
-    // Create a new student record
+    // // Create a new student record
     const newStudent = await db.studentModel.create({
       data: {
         firstName,
@@ -90,21 +101,35 @@ export const createStudent: RequestHandler = async (req: Request, res: Response)
         university,
         motivation,
         programmingKnowledge,
-        github,
         course,
+        cv:result.secure_url,
+         cloudinary_id: result.public_id
    
       },
     });
-
+//? response
     return res.status(201).json({
       data:newStudent,
-      error:null
+      error:null,
+
     });
   } catch (error) {
     console.error(error);
     return res.status(500).json({ error: "Internal server error" , data:null});
   }
 };
+
+
+
+
+
+
+
+
+
+
+
+
 // Update a student ---
 export const updateStudent: RequestHandler = async (req, res) => {
   const id = req.params.id;
@@ -123,7 +148,7 @@ export const updateStudent: RequestHandler = async (req, res) => {
       university ,
       motivation,
        programmingKnowledge,
-      github,
+     
       course,
     } = req.body;
     if (courseCompleted) {
@@ -144,7 +169,7 @@ if (school) {
       return res.status(404).json({ message: "Student not found" });
     }
     console.log(`existing student:${existingStudent}`)
-    // Check if another student has the same email, phone, or GitHub link
+    // Check if another student has the same email, phone,
     //? email                 String   @unique
     if (email && email !== existingStudent.email) {
         const existingEmail = await db.studentModel.findUnique({
@@ -175,7 +200,7 @@ if (school) {
         email:   email  ?? existingStudent.email,
         firstName:  firstName  ?? existingStudent.firstName ,
         gender: gender  ?? existingStudent.gender  ,
-        github:  github  ?? existingStudent.github ,
+      
         lastName:  lastName   ?? existingStudent.lastName,
         motivation:   motivation  ?? existingStudent.motivation,
         phone:  phone  ?? existingStudent.phone ,

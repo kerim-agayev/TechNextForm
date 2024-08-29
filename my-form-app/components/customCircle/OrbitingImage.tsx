@@ -14,7 +14,7 @@ export function OrbitingCirclesDemo() {
         <Image
           className="rounded-full"
           alt="circle"
-          src="/logothree.PNG"
+          src="/logofour.PNG"
           width={75}
           height={75}
         />
