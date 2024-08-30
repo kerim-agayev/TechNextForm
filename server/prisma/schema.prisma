@@ -15,28 +15,33 @@ datasource db {
 
 model StudentModel {
   id                            String   @id @default(auto()) @map("_id") @db.ObjectId
-  firstName                     String //? +
-  lastName                      String //? +
-  fatherName                    String? //? new
-  dob                           DateTime //?+ birthdate duzelt
-  gender                        String    //? +
-  email                         String   @unique   //? +
-  phone                         String   @unique //? phoneNumber duzelt 
-  address                       String //? --- lazim deyil
-  school                        String //? school goturek
-  university                    String //? university sil
-  motivation                    String //? motivationLetter
-  programmingKnowledge          String //? --- 
-  course                        String  //? muemmali
-  firstStageCompleted           Boolean? @default(false) // Birinci merhele testi 
-  secondStageInterviewCompleted Boolean? @default(false) // İkinci merhele musahibe
-  courseCompleted               Boolean? @default(false) // Kurs bitisi haqqinda melumat 
-  createdAt          DateTime     @default(now())  //? 
-  updatedAt          DateTime     @updatedAt //? sil 
-  //? finCode
-  //? CvUrl
-  //? majority id - ixtisaas
+  FirstName                     String //? +
+  LastName                      String //? +
+  FatherName                    String //? NEW +
+  BirthDate                     DateTime //?+ birthdate duzelt
+  FinCode                       String     //? NEW +
+  Gender                        String    //? +
+  Email                         String   @unique   //? +
+  PhoneNumber                       String   @unique //? phoneNumber duzelt 
+  Address                       String //? +
+  University                    String //? +
+  MotivationLetter                  String //? motivationLetter new +
+  ProgrammingKnowledge          String //? +
+  MajorityId                     String    @db.ObjectId   //? new  +
+  Majority   Majority @relation(fields: [MajorityId], references: [id])
+  FirstStageCompleted           Boolean? @default(false) // Birinci merhele testi +
+  SecondStageInterviewCompleted Boolean? @default(false) // İkinci merhele musahibe +
+  CourseCompleted               Boolean? @default(false) // Kurs bitisi haqqinda melumat +
+  CreatedAt          DateTime     @default(now())  //? +
+  
   //? cv upload
   cloudinary_id      String?
-  cv                  String?
+  CvUrl           String //? +
+}
+
+
+model Majority {
+  id                            String   @id @default(auto()) @map("_id") @db.ObjectId
+  MajorityName                  String
+  Students                     StudentModel[]
 }

@@ -3,7 +3,7 @@
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { createStudentAsync } from "../../redux/slice/StudentService";
+import { createStudentAsync, getAllMajoritiesAsync } from "../../redux/slice/StudentService";
 import {
   Form,
   FormField,
@@ -11,7 +11,6 @@ import {
   FormLabel,
   FormMessage,
   FormControl,
-  FormDescription,
 } from "../ui/form"; //? shadcn ui
 import { Input } from "../ui/input";
 import AiButton from "../MagicButton";
@@ -19,8 +18,8 @@ import { useAppDispatch, useAppSelector } from "@/lib/hooks";
 import { message, Spin } from "antd";
 import { useRouter } from "next/navigation";
 import { useGoogleReCaptcha } from "react-google-recaptcha-v3";
-import { useState } from "react";
-import { ConsoleSqlOutlined } from "@ant-design/icons";
+import { useState, useEffect } from "react";
+
 
 export const courses = [
   "Frontend Development",
@@ -62,22 +61,24 @@ export const universities = [
 ];
 export const genders = ["Male", "Female", "Other"];
 
-const formSchema = z.object({
-  firstName: z.string().min(2, { message: "Ad ən az 2 simvol olmalıdır." }),
-  lastName: z.string().min(2, { message: "Soyadı ən az 2 simvol olmalıdır." }),
-  dob: z.string().refine(
+export const formSchema = z.object({
+  FirstName: z.string().min(2, { message: "Ad ən az 2 simvol olmalıdır." }),
+  LastName: z.string().min(2, { message: "Soyadı ən az 2 simvol olmalıdır." }),
+ FatherName: z.string().min(2, { message: "Ad ən az 2 simvol olmalıdır." }),
+ FinCode: z.string().min(7, { message: "FinCode ən az 7 simvol olmalıdır." }),
+  BirthDate: z.string().refine(
     (val) => {
       const date = new Date(val);
       const age = new Date().getFullYear() - date.getFullYear();
       return age >= 8 && age <= 100;
     },
-    { message: "Uyğun bir yaş aralığı seçın (16-100)" }
+    { message: "Uyğun bir yaş aralığı seçın (8-100)" }
   ),
-  gender: z.enum(["male", "female", "other"], {
+  Gender: z.enum(["male", "female", "other"], {
     required_error: "Cinsiyyət seçilməlidir",
   }),
-  email: z.string().email({ message: "Uyğun bir e-mail adresi daxil edin." }),
-  phone: z
+  Email: z.string().email({ message: "Uyğun bir e-mail adresi daxil edin." }),
+  PhoneNumber: z
     .string()
     .regex(
       /^(?:\+994|994)?(?:\s?)(51|50|55|70|77|60)(?:\s?\d{3})(?:\s?\d{2})(?:\s?\d{2})$/,
@@ -87,55 +88,68 @@ const formSchema = z.object({
       }
     ),
 
-  address: z.string().min(3, { message: "Ünvan ən az 5 simvol olmalıdır." }),
-  school: z
-    .string()
-    .min(2, { message: "Məktəb adı ən az 2 simvol olmalıdır." }),
-  university: z.string().min(1, { message: "Universitet seçilməlidir." }),
-  motivation: z
+  Address: z.string().min(3, { message: "Ünvan ən az 5 simvol olmalıdır." }),
+  University: z.string().min(1, { message: "Universitet seçilməlidir." }),
+  MotivationLetter: z
     .string()
     .min(10, { message: "Motivasiya məktubu ən az 10 simvol olmalıdır." }),
-  programmingKnowledge: z.string().min(3, {
+    ProgrammingKnowledge: z.string().min(3, {
     message: "Programlaşdırma dili haqqında məlumat ən az 3 simvol olmalıdır.",
   }),
-
-  course: z.string().min(1, { message: "İxtisas seçilməlidir." }),
+  MajorityId: z.string().min(1, { message: "İxtisas seçilməlidir." }),//? majorityId
   //? cv
-  cv: z.instanceof(File, { message: "Zəhmət olmasa bir CV yükləyin." }),
+  CvUrl: z.instanceof(File, { message: "Zəhmət olmasa bir CV yükləyin." }),
 });
 const TechNextForm = () => {
+ 
   const [showButton, setshowButton] = useState(false)
   //? navigation
   const router = useRouter();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      firstName: "",
-      lastName: "",
-      dob: "",
-      email: "",
-      phone: "",
-      address: "",
-      school: "",
-      university: "",
-      motivation: "",
-      programmingKnowledge: "",
-      course: "",
+      FirstName: "", //?
+      LastName: "", //?
+      FatherName:"", //?
+      BirthDate: "", //?
+      FinCode:"", //?
+      Email: "", //?
+      PhoneNumber: "", //?
+      Address: "", //?
+      University: "",//?
+      MotivationLetter: "", //?
+      ProgrammingKnowledge: "",//?
+      MajorityId: "",  //?
     },
   });
   //? redux toolkit
 
   const dispatch = useAppDispatch();
+  useEffect(() => {
+    // Dispatch the action to fetch majorities
+    dispatch(getAllMajoritiesAsync())
+      .unwrap() // unwrap to handle errors
+      .catch((error) => {
 
-  const { error: backError, isLoading } = useAppSelector(
+        message.error(`Error fetching majorities: ${error}`);
+      });
+  }, [dispatch]);
+
+  const { error: backError, isLoading, majorities, isMajoritiesLoading, isMajoritiesError } = useAppSelector(
     (state) => state.students
   );
 
- 
   async function onSubmitForm(values: z.infer<typeof formSchema>) {
-    await handleRecaptchaSubmit() 
-  
+    try {
+      const result = await dispatch(createStudentAsync(values)).unwrap();
+      if (result) {
+        router.push("/success");
+      }
+    } catch (error) {
+      message.error(error as string);
+    }
   }
+  
 //? rectaptcha
 const { executeRecaptcha } = useGoogleReCaptcha();
 const handleRecaptchaSubmit = async( ) => {
@@ -175,7 +189,7 @@ const handleRecaptchaSubmit = async( ) => {
   
             <FormField
               control={form.control}
-              name="firstName"
+              name="FirstName"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className="text-sm font-medium mb-2">
@@ -195,7 +209,7 @@ const handleRecaptchaSubmit = async( ) => {
 
             <FormField
               control={form.control}
-              name="lastName"
+              name="LastName"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className="text-sm font-medium mb-2">
@@ -212,10 +226,47 @@ const handleRecaptchaSubmit = async( ) => {
                 </FormItem>
               )}
             />
-
+              <FormField
+              control={form.control}
+              name="FatherName"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-sm font-medium mb-2">
+                    Ata adı*
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      className="border rounded p-3 w-full"
+                      placeholder="Soyad"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+ <FormField
+              control={form.control}
+              name="FinCode"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-sm font-medium mb-2">
+                    Fin Kod*
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      className="border rounded p-3 w-full"
+                      placeholder="Soyad"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
             <FormField
               control={form.control}
-              name="dob"
+              name="BirthDate"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className="text-sm font-medium mb-2">
@@ -236,7 +287,7 @@ const handleRecaptchaSubmit = async( ) => {
 
             <FormField
               control={form.control}
-              name="gender"
+              name="Gender"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className="text-sm font-medium mb-2">
@@ -257,7 +308,7 @@ const handleRecaptchaSubmit = async( ) => {
 
             <FormField
               control={form.control}
-              name="email"
+              name="Email"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className="text-sm font-medium mb-2">
@@ -277,7 +328,7 @@ const handleRecaptchaSubmit = async( ) => {
 
             <FormField
               control={form.control}
-              name="phone"
+              name="PhoneNumber"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className="text-sm font-medium mb-2">
@@ -297,7 +348,7 @@ const handleRecaptchaSubmit = async( ) => {
 
             <FormField
               control={form.control}
-              name="address"
+              name="Address"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className="text-sm font-medium mb-2">
@@ -315,29 +366,10 @@ const handleRecaptchaSubmit = async( ) => {
               )}
             />
 
-            <FormField
-              control={form.control}
-              name="school"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-sm font-medium mb-2">
-                    Məktəb Adı*
-                  </FormLabel>
-                  <FormControl>
-                    <Input
-                      className="border rounded p-3 w-full"
-                      placeholder="Məktəb"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
 
             <FormField
               control={form.control}
-              name="university"
+              name="University"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className="text-sm font-medium mb-2">
@@ -359,7 +391,7 @@ const handleRecaptchaSubmit = async( ) => {
             />
             <FormField
               control={form.control}
-              name="course"
+              name="MajorityId"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className="text-sm font-medium mb-2">
@@ -368,9 +400,9 @@ const handleRecaptchaSubmit = async( ) => {
                   <FormControl>
                     <select {...field} className="border rounded p-3 w-full">
                       <option value="">Seçin</option>
-                      {courses.map((course) => (
-                        <option key={course} value={course}>
-                          {course}
+                      {majorities.map((majority) => (
+                        <option key={majority.id} value={majority.id}>
+                          {majority.MajorityName}
                         </option>
                       ))}
                     </select>
@@ -382,7 +414,7 @@ const handleRecaptchaSubmit = async( ) => {
 
             <FormField
               control={form.control}
-              name="motivation"
+              name="MotivationLetter"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className="text-sm font-medium mb-2">
@@ -403,7 +435,7 @@ const handleRecaptchaSubmit = async( ) => {
 
             <FormField
               control={form.control}
-              name="programmingKnowledge"
+              name="ProgrammingKnowledge"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className="text-sm font-medium mb-2">
@@ -424,7 +456,7 @@ const handleRecaptchaSubmit = async( ) => {
             
             <FormField
               control={form.control}
-              name="cv"
+              name="CvUrl"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className="text-sm font-medium mb-2">
@@ -470,20 +502,3 @@ export default TechNextForm;
 
 
 
- // async function onSubmitForm(values: z.infer<typeof formSchema>) {
-  //   const formattedData = {
-  //     ...values,
-  //     dob: new Date(values.dob), //
-  //   };
-  //   console.log(values)
-  //   try {
-  //     await dispatch(createStudentAsync(formattedData)).unwrap();//? bunayenidenbax
-  //     message.success('Qeydiyyat uğurla tamamlandı');
-  //     router.push('/success');
-  //   } catch (error) {
-  //       message.error(error as string, 6);
-
-  //   } finally {
-  //     form.reset();
-  //   }
-  // }

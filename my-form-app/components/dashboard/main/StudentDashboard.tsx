@@ -2,19 +2,33 @@
 import React, { useEffect, useState } from "react";
 import { Table, Space, Button, message, Spin, Popconfirm, Input, Form, Checkbox } from "antd";
 import { useAppDispatch, useAppSelector } from "../../../lib/hooks";
-import { deleteStudentAsync, getAllStudentsAsync, updateStudentAsync } from "../../../redux/slice/StudentService";
+import { deleteStudentAsync, getAllMajoritiesAsync, getAllStudentsAsync, updateStudentAsync } from "../../../redux/slice/StudentService";
 import type { Student } from "../../../redux/slice/StudentSlice";
 import { courses, genders, universities } from "@/components/form/TechNextForm";
 import type { ColumnsType, TableProps } from "antd/es/table";
 import { SearchIcon } from "lucide-react";
 
 const StudentDashboard: React.FC = () => {
-
- 
   //? redux toolkit
   const dispatch = useAppDispatch();
+  useEffect(() => {
+    // Dispatch the action to fetch majorities
+    dispatch(getAllMajoritiesAsync())
+      .unwrap() // unwrap to handle errors
+      .catch((error) => {
+
+        message.error(`Error fetching majorities: ${error}`);
+
+      });
+  }, [dispatch]);
+ 
+
   const [editingRow, seteditingRow] = useState<Student>()
-  const { students, isLoading, error, errorDelete, isLoadingDelete } = useAppSelector((state) => state.students);
+  const { students, isLoading, error, errorDelete, isLoadingDelete, majorities } = useAppSelector((state) => state.students);
+  const majorityMap = majorities.reduce((acc, majority) => {
+    acc[majority.id] = majority.MajorityName;
+    return acc;
+  }, {} as { [key: string]: string });
   //console.log(`students:${JSON.stringify(students)}`)
   //? use effect
   useEffect(() => {
@@ -68,7 +82,7 @@ const StudentDashboard: React.FC = () => {
      //? firstname
     {
       title: "First Name",
-      dataIndex: "firstName",
+      dataIndex: "FirstName",
       key: "firstName",
       responsive: ['xs', 'sm', 'md', 'lg', 'xl'],
       filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => {
@@ -94,21 +108,28 @@ const StudentDashboard: React.FC = () => {
         return <SearchIcon size={10}/>
       },
       onFilter:(value, record) => {
-        return record.firstName.toLowerCase().includes(value.toString().toLowerCase())
+        return record.FirstName.toLowerCase().includes(value.toString().toLowerCase())
       }
     },
      //? lastname
     {
       title: "Last Name",
-      dataIndex: "lastName",
+      dataIndex: "LastName",
       key: "lastName",
       responsive: ['xs', 'sm', 'md', 'lg', 'xl'],
     },
-    //? dob
+      //? FatherName
+      {
+        title: "Last Name",
+        dataIndex: "FatherName",
+        key: "FatherName",
+        responsive: ['xs', 'sm', 'md', 'lg', 'xl'],
+      },
+    //? birthdate
     {
-      title: "DOB",
-      dataIndex: "dob",
-      key: "dob",
+      title: "Birthdate",
+      dataIndex: "BirthDate",
+      key: "BirthDate",
       render: (dob: Date) => {
         const age = calculateAge(dob);
         return (
@@ -118,25 +139,25 @@ const StudentDashboard: React.FC = () => {
         );
       },
       responsive: ['xs', 'sm', 'md', 'lg', 'xl'],
-      sorter: (a: Student, b: Student) => new Date(a.dob).getTime() - new Date(b.dob).getTime(),
+      sorter: (a: Student, b: Student) => new Date(a.BirthDate).getTime() - new Date(b.BirthDate).getTime(),
     },
     //? gender
     {
       title: "Gender",
-      dataIndex: "gender",
-      key: "gender",
+      dataIndex: "Gender",
+      key: "Gender",
       filters: genders.map((gender) => ({
         text: gender,
         value: gender,
       })),
-      onFilter: (value, record) => record.gender === value,
+      onFilter: (value, record) => record.Gender === value,
       responsive: ['xs', 'sm', 'md', 'lg', 'xl'],
     },
     //? email
     {
       title: "Email",
-      dataIndex: "email",
-      key: "email",
+      dataIndex: "Email",
+      key: "Email",
       responsive: ['xs', 'sm', 'md', 'lg', 'xl'],
       filterDropdown: ({ setSelectedKeys, selectedKeys, confirm }) => {
         return (
@@ -161,14 +182,14 @@ const StudentDashboard: React.FC = () => {
         return <SearchIcon size={10} />;
       },
       onFilter: (value, record) => {
-        return record.email.toLowerCase().includes(value.toString().toLowerCase());
+        return record.Email.toLowerCase().includes(value.toString().toLowerCase());
       }
     },
     //? phone
     {
       title: "Phone",
-      dataIndex: "phone",
-      key: "phone",
+      dataIndex: "PhoneNumber",
+      key: "PhoneNumber",
       responsive: ['xs', 'sm', 'md', 'lg', 'xl'],
       filterDropdown: ({ setSelectedKeys, selectedKeys, confirm }) => {
         return (
@@ -200,49 +221,44 @@ const StudentDashboard: React.FC = () => {
         return <SearchIcon size={10} />;
       },
       onFilter: (value, record) => {
-        return record.phone.toLowerCase().includes(value.toString().toLowerCase());
+        return record.PhoneNumber.toLowerCase().includes(value.toString().toLowerCase());
       }
     },
     //? school
-    {
-        title: "School",
-        dataIndex: "school",
-        key: "school",
-        responsive: ['xs', 'sm', 'md', 'lg', 'xl'],
-      },
       //? university
       {
         title: "University",
-        dataIndex: "university",
-        key: "university",
+        dataIndex: "University",
+        key: "University",
         filters: universities.map((university) => ({
           text: university,
           value: university,
         })),
-        onFilter: (value, record) => record.university === value,
+        onFilter: (value, record) => record.University === value,
         responsive: ['xs', 'sm', 'md', 'lg', 'xl'],
       },
       //? course
       {
-        title: "Course",
-        dataIndex: "course",
-        key: "course",
+        title: "Majority",
+        dataIndex: "MajorityId",
+        key: "MajorityId",
+        render: (majorityId: string) => majorityMap[majorityId] || 'Unknown',
         filters: courses.map((course) => ({
           text: course,
           value: course,
         })),
-        onFilter: (value, record) => record.course === value,
+        onFilter: (value, record) => majorityMap[record.MajorityId] === value,
         responsive: ['xs', 'sm', 'md', 'lg', 'xl'],
       },
       //? first stage
       {
         title: "First Stage Completed",
-        dataIndex: "firstStageCompleted",
-        key: "firstStageCompleted",
+        dataIndex: "FirstStageCompleted",
+        key: "FirstStageCompleted",
         render: (completed: boolean, record) => {
           if (editingRow && editingRow.id === record.id) {
             return (
-              <Form.Item name="firstStageCompleted" valuePropName="checked">
+              <Form.Item name="FirstStageCompleted" valuePropName="checked">
                 <Checkbox />
               </Form.Item>
             );
@@ -251,18 +267,18 @@ const StudentDashboard: React.FC = () => {
           }
         },
         filters: booleanFilters,
-        onFilter: (value, record) => record.firstStageCompleted?.toString() === value,
+        onFilter: (value, record) => record.FirstStageCompleted?.toString() === value,
         responsive: ['xs', 'sm', 'md', 'lg', 'xl'],
       },
       //? second stage
       {
     title: "Second Stage Interview Completed",
-    dataIndex: "secondStageInterviewCompleted",
-    key: "secondStageInterviewCompleted",
+    dataIndex: "SecondStageInterviewCompleted",
+    key: "SecondStageInterviewCompleted",
     render: (completed: boolean, record)=> {
       if(editingRow && editingRow.id === record.id){
          return(
-          <Form.Item  name={`secondStageInterviewCompleted`} valuePropName="checked">
+          <Form.Item  name={`SecondStageInterviewCompleted`} valuePropName="checked">
              <Checkbox />
           </Form.Item>
          )
@@ -271,18 +287,18 @@ const StudentDashboard: React.FC = () => {
       }
       },
     filters: booleanFiltersTwo,
-    onFilter: (value, record) => record.secondStageInterviewCompleted?.toString() === value,
+    onFilter: (value, record) => record.SecondStageInterviewCompleted?.toString() === value,
     responsive: ['xs', 'sm', 'md', 'lg', 'xl'],
   },
       //? course completed
       {
         title: "Course Completed",
-        dataIndex: "courseCompleted",
-        key: "courseCompleted",
+        dataIndex: "CourseCompleted",
+        key: "CourseCompleted",
         render: (completed: boolean, record) => {
           if(editingRow && editingRow.id === record.id){
              return(
-              <Form.Item  name={`courseCompleted`}valuePropName="checked">
+              <Form.Item  name={`CourseCompleted`}valuePropName="checked">
              <Checkbox />
               </Form.Item>
              )
@@ -291,16 +307,16 @@ const StudentDashboard: React.FC = () => {
           }
           },
         filters: booleanFiltersThree,
-        onFilter: (value, record) => record.courseCompleted?.toString() === value,
+        onFilter: (value, record) => record.CourseCompleted?.toString() === value,
         responsive: ['xs', 'sm', 'md', 'lg', 'xl'],
       },
       //? createdAt
       {
         title: "Created At",
-        dataIndex: "createdAt",
-        key: "createdAt",
+        dataIndex: "CreatedAt",
+        key: "CreatedAt",
         render: (createdAt: Date) => new Date(createdAt).toLocaleDateString(),
-        sorter: (a: Student, b: Student) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
+        sorter: (a: Student, b: Student) => new Date(a.CreatedAt).getTime() - new Date(b.CreatedAt).getTime(),
         responsive: ['xs', 'sm', 'md', 'lg', 'xl'],
       },
       //?active delete

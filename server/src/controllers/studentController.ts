@@ -1,4 +1,4 @@
-import { cloudinary } from "@/utils/cloudinary";
+import { cloudinary } from "../utils/cloudinary"
 import { db } from "../db/db";
 import { Request, RequestHandler, Response } from "express";
 import fs from "fs";
@@ -16,47 +16,30 @@ export const getStudents: RequestHandler = async (req: Request, res: Response) =
   }
 };
 
-// Get student by ID
-export const getStudentById: RequestHandler = async (req: Request, res: Response) => {
-  try {
-    const id = req.params.id;
-    const student = await db.studentModel.findUnique({
-      where: { id },
-    });
-    if (student) {
-      return res.status(200).json({
-        data:student,
-        error:null
-      });
-    } else {
-      return res.status(404).json({ error: "Student not found" , data:null});
-    }
-  } catch (error) {
-    console.error(error);
-    return res.status(500).json({ error: "Internal server error" , data:null});
-  }
-};
 
 // Create a new student
-
 export const createStudent: RequestHandler = async (req: Request, res: Response) => {
+  console.log('File:', req.file); //
+  console.log('Body:', req.body); 
   try {
     const {
-      firstName,
-      lastName,
-      dob,
-      gender,
-      email,
-      phone,
-      address,
-      school,
-      university,
-      motivation,
-      programmingKnowledge,
-      course,
+      FirstName,
+      LastName,
+      FatherName,
+      BirthDate,
+      FinCode,
+      Gender,
+      Email,
+      PhoneNumber,
+      Address,
+       University,
+      MotivationLetter,
+      ProgrammingKnowledge, 
+      MajorityId,
     } = req.body;
-    console.log(`Received data: ${JSON.stringify(req.body)}`);
-
+    if (!Email || !PhoneNumber || !BirthDate) {
+      return res.status(400).json({ error: "Email, phone ve birthdate mecburidir", data: null });
+    }
   //upload image to cloudinary
   if (!req.file) {
     return res.status(400).json({ error: "CV file is required", data: null });
@@ -70,7 +53,7 @@ export const createStudent: RequestHandler = async (req: Request, res: Response)
     //? email
     const existingEmail = await db.studentModel.findUnique({
       where:{
-        email
+        Email
       }
     })
     if (existingEmail) {
@@ -79,7 +62,7 @@ export const createStudent: RequestHandler = async (req: Request, res: Response)
     //? phone
     const existingPhone = await db.studentModel.findUnique({
       where:{
-        phone
+        PhoneNumber
       }
     })
     if (existingPhone) {
@@ -90,21 +73,21 @@ export const createStudent: RequestHandler = async (req: Request, res: Response)
     // // Create a new student record
     const newStudent = await db.studentModel.create({
       data: {
-        firstName,
-        lastName,
-        dob,
-        gender,
-        email,
-        phone,
-        address,
-        school,
-        university,
-        motivation,
-        programmingKnowledge,
-        course,
-        cv:result.secure_url,
-         cloudinary_id: result.public_id
-   
+      FirstName,
+      LastName,
+      FatherName,
+      BirthDate,
+      FinCode,
+      Gender,
+      Email,
+      PhoneNumber,
+      Address,
+      University,
+      MotivationLetter,
+      ProgrammingKnowledge, 
+      MajorityId,
+      CvUrl:result.secure_url,
+      cloudinary_id: result.public_id
       },
     });
 //? response
@@ -118,156 +101,96 @@ export const createStudent: RequestHandler = async (req: Request, res: Response)
     return res.status(500).json({ error: "Internal server error" , data:null});
   }
 };
-
-
-
-
-
-
-
-
-
-
-
-
 // Update a student ---
-export const updateStudent: RequestHandler = async (req, res) => {
-  const id = req.params.id;
-  const { 
-    firstStageCompleted,
-    secondStageInterviewCompleted,
-    courseCompleted,
-      firstName,
-      lastName,
-      dob,
-      gender,
-      email ,
-      phone,
-      address,
-      school,
-      university ,
-      motivation,
-       programmingKnowledge,
+// export const updateStudent: RequestHandler = async (req, res) => {
+//   const id = req.params.id;
+//   const { 
+//     firstStageCompleted,
+//     secondStageInterviewCompleted,
+//     courseCompleted,
+//       firstName,
+//       lastName,
+//       dob,
+//       gender,
+//       email ,
+//       phone,
+//       address,
+//       school,
+//       university ,
+//       motivation,
+//        programmingKnowledge,
      
-      course,
-    } = req.body;
-    if (courseCompleted) {
-      console.log(`courseCompleted:${courseCompleted}`)
-    }
-if (school) {
-  console.log(`school:${school}`)
-}
-  try {
+//       course,
+//     } = req.body;
+//     if (courseCompleted) {
+//       console.log(`courseCompleted:${courseCompleted}`)
+//     }
+// if (school) {
+//   console.log(`school:${school}`)
+// }
+//   try {
   
       
-    // Check if the student exists
-    const existingStudent = await db.studentModel.findUnique({
-      where: { id },
-    });
+//     // Check if the student exists
+//     const existingStudent = await db.studentModel.findUnique({
+//       where: { id },
+//     });
 
-    if (!existingStudent) {
-      return res.status(404).json({ message: "Student not found" });
-    }
-    console.log(`existing student:${existingStudent}`)
-    // Check if another student has the same email, phone,
-    //? email                 String   @unique
-    if (email && email !== existingStudent.email) {
-        const existingEmail = await db.studentModel.findUnique({
-            where: { email },
-          });
+//     if (!existingStudent) {
+//       return res.status(404).json({ message: "Student not found" });
+//     }
+//     console.log(`existing student:${existingStudent}`)
+//     // Check if another student has the same email, phone,
+//     //? email                 String   @unique
+//     if (email && email !== existingStudent.email) {
+//         const existingEmail = await db.studentModel.findUnique({
+//             where: { email },
+//           });
       
-          if (existingEmail) {
-            return res.status(404).json({ message: "Email already exists" });
-          }
-    }
-    //? phone                 String   @unique
-    if (phone && phone !== existingStudent.phone) {
-        const existingPhone = await db.studentModel.findUnique({
-            where: { phone },
-          });
+//           if (existingEmail) {
+//             return res.status(404).json({ message: "Email already exists" });
+//           }
+//     }
+//     //? phone                 String   @unique
+//     if (phone && phone !== existingStudent.phone) {
+//         const existingPhone = await db.studentModel.findUnique({
+//             where: { phone },
+//           });
       
-          if (existingPhone) {
-            return res.status(404).json({ message: "Phone already exists" });
-          }
-    }
+//           if (existingPhone) {
+//             return res.status(404).json({ message: "Phone already exists" });
+//           }
+//     }
 
-    const updatedStudent = await db.studentModel.update({
-      where: { id },
-      data: {
-        address:  address ?? existingStudent.address  ,
-        course:  course  ?? existingStudent.course ,
-        dob:   dob  ?? existingStudent.dob,
-        email:   email  ?? existingStudent.email,
-        firstName:  firstName  ?? existingStudent.firstName ,
-        gender: gender  ?? existingStudent.gender  ,
+//     const updatedStudent = await db.studentModel.update({
+//       where: { id },
+//       data: {
+//         address:  address ?? existingStudent.address  ,
+//         course:  course  ?? existingStudent.course ,
+//         dob:   dob  ?? existingStudent.dob,
+//         email:   email  ?? existingStudent.email,
+//         firstName:  firstName  ?? existingStudent.firstName ,
+//         gender: gender  ?? existingStudent.gender  ,
       
-        lastName:  lastName   ?? existingStudent.lastName,
-        motivation:   motivation  ?? existingStudent.motivation,
-        phone:  phone  ?? existingStudent.phone ,
-        programmingKnowledge:  programmingKnowledge   ?? existingStudent.programmingKnowledge,
-        school:  school   ?? existingStudent.school,
-        university:  university ?? existingStudent.university,
-        firstStageCompleted:firstStageCompleted ?? existingStudent.firstStageCompleted,
-        secondStageInterviewCompleted:secondStageInterviewCompleted ?? existingStudent.secondStageInterviewCompleted,
-        courseCompleted:courseCompleted ?? existingStudent.courseCompleted
+//         lastName:  lastName   ?? existingStudent.lastName,
+//         motivation:   motivation  ?? existingStudent.motivation,
+//         phone:  phone  ?? existingStudent.phone ,
+//         programmingKnowledge:  programmingKnowledge   ?? existingStudent.programmingKnowledge,
+//         school:  school   ?? existingStudent.school,
+//         university:  university ?? existingStudent.university,
+//         firstStageCompleted:firstStageCompleted ?? existingStudent.firstStageCompleted,
+//         secondStageInterviewCompleted:secondStageInterviewCompleted ?? existingStudent.secondStageInterviewCompleted,
+//         courseCompleted:courseCompleted ?? existingStudent.courseCompleted
 
-      },
-    });
+//       },
+//     });
 
-    return res.status(200).json(updatedStudent);
-  } catch (error) {
-    console.error(error);
-    return res.status(500).json({ message: "Internal server error" });
-  }
-};
-
-
-
-
-
-
-
-
-export const updateStudentStages: RequestHandler = async (req: Request, res: Response) => {
-try {
-  const id = req.params.id;
-  const { 
-    firstStageCompleted,
-    secondStageInterviewCompleted,
-    courseCompleted,
-    } = req.body;
-    const existingStudent = await db.studentModel.findUnique({
-      where: { id },
-    });
-
-    if (!existingStudent) {
-      return res.status(404).json({ message: "Student not found" });
-    }
-
-    const updatedStudent = await db.studentModel.update({
-      where: { id },
-      data: {
-        firstStageCompleted:firstStageCompleted ?? existingStudent.firstStageCompleted,
-        secondStageInterviewCompleted:secondStageInterviewCompleted ?? existingStudent.secondStageInterviewCompleted,
-        courseCompleted:courseCompleted ?? existingStudent.courseCompleted,
-
-      },
-    });
-    return res.status(200).json(updatedStudent);
-} catch (error) {
-  console.error(error);
-  return res.status(500).json({ message: "Internal server error" });
-}
-
-}
-
-
-
-
-
-
-
-
+//     return res.status(200).json(updatedStudent);
+//   } catch (error) {
+//     console.error(error);
+//     return res.status(500).json({ message: "Internal server error" });
+//   }
+// };
 
 // Delete a student
 export const deleteStudent: RequestHandler = async (req: Request, res: Response) => {
@@ -307,5 +230,21 @@ export const deleteAllStudent: RequestHandler = async (req: Request, res: Respon
   } catch (error) {
     console.error(error);
     return res.status(500).json({ error: "Internal server error" , data:null});
+  }
+};
+
+
+//?
+// Get all Majorities
+export const getAllMajorities: RequestHandler = async (req: Request, res: Response) => {
+  try {
+    const majority = await db.majority.findMany();
+    return res.status(200).json({
+      data:majority,
+      error:null
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({error: "Internal server error" , data:null});
   }
 };
