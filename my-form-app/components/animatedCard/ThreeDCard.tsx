@@ -4,6 +4,8 @@ import Image from "next/image";
 import React from "react";
 import { CardBody, CardContainer, CardItem } from "../ui/3d-card";
 import { TypewriterEffectSmoothDemo } from "./TypewriterEffect";
+import { InstagramCard} from "./InstagramCard";
+import { LinkPreviewDemo } from "./InstagramLink";
 
 export function ThreeDCardDemo() {
   return (
@@ -37,22 +39,23 @@ export function ThreeDCardDemo() {
           />
         </CardItem>
         <div className="flex justify-between items-center mt-20">
-          {/* <CardItem
+           <CardItem
             translateZ={20}
             translateX={-40}
             as="button"
             className="px-4 py-2 rounded-xl text-xs font-normal dark:text-white"
           >
-            Try now →
-          </CardItem>
+            {/* Try now → */}
+            <InstagramCard/>
+          </CardItem> 
           <CardItem
             translateZ={20}
             translateX={40}
             as="button"
             className="px-4 py-2 rounded-xl bg-black dark:bg-white dark:text-black text-white text-xs font-bold"
           >
-            Sign up
-          </CardItem> */}
+            <LinkPreviewDemo/>
+          </CardItem> 
         </div>
       </CardBody>
     </CardContainer>

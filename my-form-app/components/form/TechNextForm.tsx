@@ -21,18 +21,18 @@ import { useGoogleReCaptcha } from "react-google-recaptcha-v3";
 import { useState, useEffect } from "react";
 
 
-export const courses = [
-  "Frontend Development",
-  "Backend Development",
-  "Full Stack (MERN) Development",
-  "Flutter Development",
-  "Mobile App Development",
-  "JavaScript Mastery",
-  "DevOps Engineering",
-  "Data Science",
-  "AI & Machine Learning",
-  "Cybersecurity",
-];
+// export const courses = [
+//   "Frontend Development",
+//   "Backend Development",
+//   "Full Stack (MERN) Development",
+//   "Flutter Development",
+//   "Mobile App Development",
+//   "JavaScript Mastery",
+//   "DevOps Engineering",
+//   "Data Science",
+//   "AI & Machine Learning",
+//   "Cybersecurity",
+// ];
 export const universities = [
   "Azərbaycan Dövlət İqtisad Universiteti",
   "Bakı Dövlət Universiteti",

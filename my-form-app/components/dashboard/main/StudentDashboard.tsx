@@ -4,7 +4,7 @@ import { Table, Space, Button, message, Spin, Popconfirm, Input, Form, Checkbox 
 import { useAppDispatch, useAppSelector } from "../../../lib/hooks";
 import { deleteStudentAsync, getAllMajoritiesAsync, getAllStudentsAsync, updateStudentAsync } from "../../../redux/slice/StudentService";
 import type { Student } from "../../../redux/slice/StudentSlice";
-import { courses, genders, universities } from "@/components/form/TechNextForm";
+import { genders, universities } from "@/components/form/TechNextForm";
 import type { ColumnsType, TableProps } from "antd/es/table";
 import { SearchIcon } from "lucide-react";
 
@@ -243,9 +243,9 @@ const StudentDashboard: React.FC = () => {
         dataIndex: "MajorityId",
         key: "MajorityId",
         render: (majorityId: string) => majorityMap[majorityId] || 'Unknown',
-        filters: courses.map((course) => ({
-          text: course,
-          value: course,
+        filters: majorities.map((majority) => ({
+          text: majority.MajorityName,
+          value: majority.MajorityName,
         })),
         onFilter: (value, record) => majorityMap[record.MajorityId] === value,
         responsive: ['xs', 'sm', 'md', 'lg', 'xl'],
