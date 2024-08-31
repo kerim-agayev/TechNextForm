@@ -7,6 +7,7 @@ import type { Student } from "../../../redux/slice/StudentSlice";
 import { genders, universities } from "@/components/form/TechNextForm";
 import type { ColumnsType, TableProps } from "antd/es/table";
 import { SearchIcon } from "lucide-react";
+import Link from "next/link";
 
 const StudentDashboard: React.FC = () => {
   //? redux toolkit
@@ -223,6 +224,20 @@ const StudentDashboard: React.FC = () => {
       onFilter: (value, record) => {
         return record.PhoneNumber.toLowerCase().includes(value.toString().toLowerCase());
       }
+    },
+    //? CvUrl
+    {
+      title: "Cv Url",
+      dataIndex: "CvUrl",
+      key: "CvUrl",
+      render:(text) => {
+        return (
+          <div>
+            <Link href={text}>CvUrl</Link>
+          </div>
+        )
+      },
+      responsive: ['xs', 'sm', 'md', 'lg', 'xl'],
     },
     //? school
       //? university

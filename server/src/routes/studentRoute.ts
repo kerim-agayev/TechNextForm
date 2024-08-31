@@ -2,7 +2,7 @@ import express from "express";
 import {
   getStudents,
   createStudent,
-  // updateStudent,
+  updateStudent,
   deleteStudent,
   deleteAllStudent,
   getAllMajorities
@@ -15,7 +15,7 @@ studentRouter.post("/students",upload.single('CvUrl') ,  createStudent);
 // GET all students
 studentRouter.get("/students", getStudents);
 // PUT update a student
-//studentRouter.put("/students/:id", updateStudent);
+studentRouter.put("/students/:id", updateStudent);
 // DELETE a student
 studentRouter.delete("/students/:id", deleteStudent);
 // DELETE all student
