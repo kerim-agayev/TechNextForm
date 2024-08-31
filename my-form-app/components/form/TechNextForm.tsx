@@ -148,10 +148,12 @@ const TechNextForm = () => {
     try {
       const result = await dispatch(createStudentAsync(values)).unwrap();
       if (result) {
+        form.reset(); // Formu sifirla
         router.push("/success");
       }
     } catch (error) {
-      message.error(error as string);
+      form.reset(); // Formu sifirla
+      message.error(error as string, 6);
     }
   }
   
