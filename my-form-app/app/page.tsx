@@ -1,10 +1,9 @@
-import TechNextForm from "../components/form/TechNextForm"
+
+import { SparklesPreview } from "@/components/sparklesNotFoun/Sparkles";
 
 
 export default function Home() {
   return (
-  <main>
-   Kerim
-  </main>
+<SparklesPreview/>
   );
 }
