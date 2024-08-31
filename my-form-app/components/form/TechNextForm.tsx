@@ -44,7 +44,7 @@ export const universities = [
   "ADA Universiteti",
   "Azərbaycan Dövlət Neft və Sənaye Universiteti",
   "Bakı Slavyan Universiteti",
-  "Qafqaz Universiteti",
+  "Bakı Mühəndislik Universiteti",
   "Naxçıvan Dövlət Universiteti",
   "Gəncə Dövlət Universiteti",
   "Azərbaycan Memarlıq və İnşaat Universiteti",
@@ -58,6 +58,11 @@ export const universities = [
   "Lənkəran Dövlət Universiteti",
   "Azərbaycan Turizm və Menecment Universiteti",
   "Mingəçevir Dövlət Universiteti",
+  "Other University",
+  "İbtidai təhsil",
+  "Tam orta təhsil",
+  "Ümumi orta təhsil",
+  "Other"
 ];
 export const genders = ["Male", "Female", "Other"];
 
@@ -373,7 +378,7 @@ const handleRecaptchaSubmit = async( ) => {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className="text-sm font-medium mb-2">
-                    Universitet*
+                    Universitet/Təhsil*
                   </FormLabel>
                   <FormControl>
                     <select {...field} className="border rounded p-3 w-full">
@@ -460,7 +465,7 @@ const handleRecaptchaSubmit = async( ) => {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className="text-sm font-medium mb-2">
-                    CV Yükleyin*
+                    CV Yükləyin*
                   </FormLabel>
                   <FormControl>
                     <Input
